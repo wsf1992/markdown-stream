@@ -11,6 +11,7 @@ export interface UseMarkdownStreamOptions {
   processor?: MarkdownProcessor
   tokenTypes?: TokenTypeDefinition[]
   immediateSource?: string
+  debug?: boolean
 }
 
 export interface UseMarkdownStreamReturn {
@@ -34,8 +35,29 @@ export function useMarkdownStream(
   const tokens = ref<StatefulToken[]>([])
   const isStreaming = ref(false)
   const error = ref<unknown>(undefined)
+  const debug = options?.debug ?? false
 
   let currentRunId = 0
+  const prevStateMap = new Map<string, string>()
+
+  function logTokenChanges(next: StatefulToken[]): void {
+    for (const token of next) {
+      const prev = prevStateMap.get(token.id)
+      if (prev !== token.state) {
+        if (prev === undefined) {
+          console.log(`[MarkdownStream] token:new   id=${token.id} type=${token.type} state=${token.state}`)
+        } else {
+          console.log(`[MarkdownStream] token:state id=${token.id} type=${token.type} ${prev} → ${token.state}`)
+        }
+        prevStateMap.set(token.id, token.state)
+      }
+    }
+  }
+
+  function updateTokens(next: StatefulToken[]): void {
+    if (debug) logTokenChanges(next)
+    tokens.value = next
+  }
 
   function cancel(): void {
     currentRunId++
@@ -43,17 +65,18 @@ export function useMarkdownStream(
 
   function parse(markdown: string): void {
     processor.parse(markdown)
-    tokens.value = processor.snapshot()
+    updateTokens(processor.snapshot())
   }
 
   function write(chunk: string): void {
     processor.write(chunk)
-    tokens.value = processor.snapshot()
+    updateTokens(processor.snapshot())
   }
 
   function reset(): void {
     cancel()
     processor.reset()
+    prevStateMap.clear()
     tokens.value = []
     isStreaming.value = false
     error.value = undefined
@@ -73,7 +96,7 @@ export function useMarkdownStream(
       }
       if (localId === currentRunId) {
         processor.flush()
-        tokens.value = processor.snapshot()
+        updateTokens(processor.snapshot())
       }
     } catch (err) {
       if (localId === currentRunId) {

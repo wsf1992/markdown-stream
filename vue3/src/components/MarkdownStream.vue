@@ -15,7 +15,7 @@ export default defineComponent({
       default: undefined,
     },
     stream: {
-      type: Object as PropType<AsyncIterable<string>>,
+      type: [Object, String] as PropType<AsyncIterable<string> | string>,
       default: undefined,
     },
     tokenTypes: {
@@ -28,6 +28,10 @@ export default defineComponent({
       >,
       default: undefined,
     },
+    debug: {
+      type: Boolean,
+      default: false,
+    },
   },
   setup(props) {
     // 从 components 中提取自动生成的 tokenTypes（首次读取，不追踪后续变化）
@@ -37,6 +41,7 @@ export default defineComponent({
 
     const { tokens, isStreaming, consume, parse, reset } = useMarkdownStream({
       tokenTypes: [...(props.tokenTypes ?? []), ...autoTokenTypes],
+      debug: props.debug,
     })
 
     // 构建 name → Component 映射
@@ -74,7 +79,11 @@ export default defineComponent({
       (stream) => {
         if (stream !== undefined) {
           reset()
-          consume(stream)
+          if (typeof stream === 'string') {
+            parse(stream)
+          } else {
+            consume(stream)
+          }
         }
       },
       { immediate: true }
