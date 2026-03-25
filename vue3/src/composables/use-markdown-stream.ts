@@ -71,6 +71,10 @@ export function useMarkdownStream(
         if (localId !== currentRunId) break
         write(chunk)
       }
+      if (localId === currentRunId) {
+        processor.flush()
+        tokens.value = processor.snapshot()
+      }
     } catch (err) {
       if (localId === currentRunId) {
         error.value = err

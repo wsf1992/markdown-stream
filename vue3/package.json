@@ -1,7 +1,10 @@
 {
   "name": "@markdown-stream/vue3",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "type": "module",
+  "files": [
+    "dist"
+  ],
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -11,13 +14,20 @@
       "types": "./dist/index.d.ts"
     }
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "vite build && vue-tsc -p tsconfig.build.json --declaration --emitDeclarationOnly --outDir dist",
+    "prepublishOnly": "npm run build",
     "test": "vitest run",
     "test:watch": "vitest"
   },
   "peerDependencies": {
     "vue": "^3.3.0"
+  },
+  "dependencies": {
+    "@markdown-stream/core": "^0.1.0"
   },
   "devDependencies": {
     "@markdown-stream/core": "file:../core",

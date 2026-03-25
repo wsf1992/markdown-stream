@@ -24,6 +24,7 @@ export interface MarkdownProcessorOptions {
 export interface MarkdownProcessor {
   parse(markdown: string): StatefulToken[]
   write(chunk: string): StatefulToken[]
+  flush(): StatefulToken[]
   snapshot(): StatefulToken[]
   reset(): void
   use(tokenType: TokenTypeDefinition): this
@@ -57,6 +58,9 @@ export function createMarkdownProcessor(
     },
     reset(): void {
       session.reset()
+    },
+    flush(): StatefulToken[] {
+      return session.flush()
     },
     use(tokenType: TokenTypeDefinition): typeof processor {
       session.use(tokenType)

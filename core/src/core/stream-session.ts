@@ -60,6 +60,18 @@ export class StreamSession {
     return this.snapshot_
   }
 
+  flush(): StatefulToken[] {
+    const rawTokens = this.adapter.parse(this.buffer)
+    const nextTokens = this.assembler.assemble(rawTokens)
+
+    const diff = diffTokens(this.prevTokens, nextTokens, true)
+
+    this.snapshot_ = this.mergeSnapshot(this.snapshot_, nextTokens, diff)
+    this.prevTokens = this.applyDiffToPrev(this.prevTokens, nextTokens, diff)
+
+    return diff
+  }
+
   reset(): void {
     this.buffer = ''
     this.prevTokens = []
