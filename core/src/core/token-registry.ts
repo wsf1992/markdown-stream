@@ -325,6 +325,24 @@ export class TokenRegistry {
     return null
   }
 
+  /**
+   * 内联级别的 token 匹配（用于 inline token 的 children）。
+   * 返回匹配到的 token 数量（从 open 到 close）。
+   */
+  matchInline(
+    ctx: TokenMatchContext
+  ): { def: TokenTypeDefinition; result: TokenMatchResult; closeIndex: number } | null {
+    for (const def of this.types) {
+      const matchResult = def.match(ctx)
+      if (matchResult === false) continue
+      // 对于内联匹配，matchResult 应该是 { consumed: n } 格式，表示到 close token 的距离
+      const consumed = matchResult === true ? 1 : matchResult.consumed
+      const closeIndex = ctx.index + consumed - 1
+      return { def, result: { consumed }, closeIndex }
+    }
+    return null
+  }
+
   getDefaultTypes(): TokenTypeDefinition[] {
     return [...defaultTypes]
   }

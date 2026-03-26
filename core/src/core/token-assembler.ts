@@ -30,7 +30,8 @@ const INLINE_SELF_CLOSING: Set<string> = new Set([
 
 function buildInlineChildren(
   tokens: RawToken[],
-  parentPath: string[]
+  parentPath: string[],
+  registry?: TokenRegistry
 ): StatefulToken[] {
   const result: StatefulToken[] = []
   let i = 0
@@ -38,6 +39,36 @@ function buildInlineChildren(
 
   while (i < tokens.length) {
     const token = tokens[i]
+
+    // Try registry match first (for custom inline tokens)
+    if (registry) {
+      const matchCtx = { tokens, index: i, path: parentPath }
+      const matched = registry.matchInline(matchCtx)
+      if (matched) {
+        const { def, closeIndex } = matched
+        const tokenName = def.name
+        typeCount[tokenName] = (typeCount[tokenName] ?? 0) + 1
+        const id = generateId(tokenName, parentPath, typeCount[tokenName] - 1)
+
+        const innerTokens = tokens.slice(i + 1, closeIndex)
+        const children = innerTokens.length > 0
+          ? buildInlineChildren(innerTokens, [...parentPath, tokenName], registry)
+          : undefined
+
+        const openToken = tokens[i]
+        const statefulToken: StatefulToken = {
+          id,
+          type: tokenName,
+          state: 'done',
+          children,
+          meta: openToken.meta ? { ...openToken.meta } : undefined,
+        }
+
+        result.push(statefulToken)
+        i = closeIndex + 1
+        continue
+      }
+    }
 
     // Handle open tokens that pair with close tokens
     const pairedType = INLINE_OPEN_CLOSE_MAP[token.type]
@@ -61,7 +92,7 @@ function buildInlineChildren(
       const innerTokens = tokens.slice(i + 1, closeIdx)
       const children =
         innerTokens.length > 0
-          ? buildInlineChildren(innerTokens, [...parentPath, pairedType])
+          ? buildInlineChildren(innerTokens, [...parentPath, pairedType], registry)
           : undefined
 
       const attrs = token.attrs
@@ -130,7 +161,7 @@ export class TokenAssembler {
         const inlineStateful = buildInlineChildren(inlineChildren, [
           ...path,
           'inline',
-        ])
+        ], this.registry)
         // We return an inline wrapper token
         typeCount['inline'] = (typeCount['inline'] ?? 0) + 1
         const id = generateId('inline', path, typeCount['inline'] - 1)
