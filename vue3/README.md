@@ -115,6 +115,67 @@ defineProps<{ token: StatefulToken }>()
 </template>
 ```
 
+### JSON 模式：解析 JSON 并展示图片
+
+添加 `openRegex: /^json$/`，匹配 ` ```json ` 代码围栏，组件内解析 JSON 并展示图片：
+
+````md
+```json
+{
+  "img": "//example.com/image.jpg",
+  "name": "示例图片"
+}
+```
+````
+
+```vue
+<script setup lang="ts">
+import { computed } from 'vue'
+import type { StatefulToken } from '@markdown-stream/core'
+
+const props = defineProps<{ token: StatefulToken }>()
+
+const parsedJson = computed(() => {
+  try {
+    return JSON.parse(props.token.content || '')
+  } catch { return null }
+})
+
+const imgUrl = computed(() => {
+  if (!parsedJson.value) return null
+  const url = parsedJson.value.img || parsedJson.value.image || null
+  // 处理 // 开头的相对协议 URL
+  return url?.startsWith('//') ? 'https:' + url : url
+})
+</script>
+
+<template>
+  <div class="json-block">
+    <!-- 图片预览 -->
+    <div v-if="imgUrl" class="json-image">
+      <img :src="imgUrl" :alt="parsedJson?.name" />
+    </div>
+    <!-- JSON 内容 -->
+    <pre v-if="parsedJson"><code>{{ JSON.stringify(parsedJson, null, 2) }}</code></pre>
+    <!-- 加载中 -->
+    <div v-else class="json-loading">解析中...</div>
+  </div>
+</template>
+```
+
+使用方式：
+
+```vue
+<template>
+  <MarkdownStream
+    :source="markdown"
+    :components="[
+      { name: 'json', openRegex: /^json$/, component: JsonBlock },
+    ]"
+  />
+</template>
+```
+
 ### 按 state 分别渲染不同组件
 
 流式场景下为不同阶段提供独立组件：
