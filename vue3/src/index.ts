@@ -1,3 +1,5 @@
+import './styles/base.css'
+
 export { useMarkdownStream } from './composables/use-markdown-stream.js'
 export type { UseMarkdownStreamOptions, UseMarkdownStreamReturn } from './composables/use-markdown-stream.js'
 

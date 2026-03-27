@@ -16,4 +16,6 @@ export interface MarkdownStreamProps {
   components?: CustomTokenDefinition[] | Partial<MarkdownTokenComponentMap>
   /** 开启后在 console 打印每个 token 的状态变化（start / streaming / done） */
   debug?: boolean
+  /** 流式输出时是否显示光标动画，默认为 false */
+  cursor?: boolean
 }

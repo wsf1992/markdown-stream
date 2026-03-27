@@ -1,6 +1,6 @@
 {
   "name": "@markdown-stream/vue3",
-  "version": "0.1.9",
+  "version": "0.1.12",
   "type": "module",
   "files": [
     "dist"
@@ -12,13 +12,14 @@
     ".": {
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
-    }
+    },
+    "./style.css": "./dist/style.css"
   },
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "build": "vite build && vue-tsc -p tsconfig.build.json --declaration --emitDeclarationOnly --outDir dist",
+    "build": "vite build && vue-tsc -p tsconfig.build.json --declaration --emitDeclarationOnly --outDir dist && cp src/styles/base.css dist/style.css",
     "prepublishOnly": "npm run build",
     "test": "vitest run",
     "test:watch": "vitest"

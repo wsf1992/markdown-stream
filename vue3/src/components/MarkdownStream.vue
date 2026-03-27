@@ -36,6 +36,10 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    cursor: {
+      type: Boolean,
+      default: false,
+    },
   },
   setup(props) {
     // 从 components 中提取自动生成的 tokenTypes（首次读取，不追踪后续变化）
@@ -117,6 +121,7 @@ export default defineComponent({
         {
           class: 'ms-root',
           'data-streaming': isStreaming.value ? '' : undefined,
+          'data-no-cursor': props.cursor === false ? '' : undefined,
         },
         children
       )
