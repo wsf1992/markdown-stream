@@ -69,11 +69,15 @@ function buildHtml(code: string): string {
 }
 
 function renderIframe() {
-  if (blobUrl.value) {
-    URL.revokeObjectURL(blobUrl.value)
+  const oldUrl = blobUrl.value
+  try {
+    const blob = new Blob([buildHtml(sfcCode.value)], { type: 'text/html' })
+    blobUrl.value = URL.createObjectURL(blob)
+  } catch (err) {
+    console.error('[VueSfcFenceRenderer] Failed to build iframe HTML:', err)
+    blobUrl.value = ''
   }
-  const blob = new Blob([buildHtml(sfcCode.value)], { type: 'text/html' })
-  blobUrl.value = URL.createObjectURL(blob)
+  if (oldUrl) URL.revokeObjectURL(oldUrl)
 }
 
 function handleMessage(event: MessageEvent) {

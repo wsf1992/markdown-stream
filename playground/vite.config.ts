@@ -7,7 +7,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@markdown-stream/core': resolve(__dirname, '../core/src/index.ts'),
-      '@markdown-stream/vue3': resolve(__dirname, '../vue3/src/index.ts'),
+      '@markdown-stream/vue3': resolve(__dirname, '../vue3/src'),
     },
   },
 })

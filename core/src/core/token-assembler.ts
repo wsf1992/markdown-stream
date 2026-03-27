@@ -80,7 +80,7 @@ function buildInlineChildren(
     if (token.type === 'text' && contentRegexDefs.length > 0) {
       const content = token.content
 
-      // Check if it's a full match (starting at index 0)
+      // Check if it's a full match (starting at index 0 AND consuming entire content)
       let fullMatch = false
       let fullMatchDef: TokenTypeDefinition | undefined
       let fullMatchResult: any
@@ -88,7 +88,8 @@ function buildInlineChildren(
       for (const def of contentRegexDefs) {
         const matchResult = def.matchInlineContent!(content)
         const match = matchResult?.data?.match as RegExpExecArray | undefined
-        if (matchResult && match && match.index === 0) {
+        // Only treat as full match if it starts at 0 AND consumes entire content
+        if (matchResult && match && match.index === 0 && match[0].length === content.length) {
           fullMatch = true
           fullMatchDef = def
           fullMatchResult = matchResult

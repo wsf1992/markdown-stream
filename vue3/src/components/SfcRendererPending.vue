@@ -17,10 +17,10 @@
 
 /* ===== SFC 组件生成 Loading：骨架动画 ===== */
 .genui-sfc-loading {
-  margin: 12px 0;
-  border-radius: 12px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  margin: var(--ms-sfc-loading-margin, 12px 0);
+  border-radius: var(--ms-sfc-loading-radius, 12px);
+  background: var(--ms-sfc-loading-bg, #ffffff);
+  border: 1px solid var(--ms-sfc-loading-border, #e2e8f0);
   overflow: hidden;
 }
 .genui-sfc-loading .sk-body {
@@ -31,9 +31,15 @@
 }
 .genui-sfc-loading .sk-block {
   border-radius: 6px;
-  background: linear-gradient(90deg, #f1f5f9 25%, #f8fafc 50%, #f1f5f9 75%);
+  background: linear-gradient(
+    90deg,
+    var(--ms-sfc-loading-skeleton-start, #f1f5f9) 25%,
+    var(--ms-sfc-loading-skeleton-end, #f8fafc) 50%,
+    var(--ms-sfc-loading-skeleton-start, #f1f5f9) 75%
+  );
   background-size: 400% 100%;
   animation: sk-wave 1.8s ease-in-out infinite;
+  animation-fill-mode: both;
 }
 .genui-sfc-loading .sk-header {
   display: flex;
@@ -44,9 +50,15 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: linear-gradient(90deg, #f1f5f9 25%, #f8fafc 50%, #f1f5f9 75%);
+  background: linear-gradient(
+    90deg,
+    var(--ms-sfc-loading-skeleton-start, #f1f5f9) 25%,
+    var(--ms-sfc-loading-skeleton-end, #f8fafc) 50%,
+    var(--ms-sfc-loading-skeleton-start, #f1f5f9) 75%
+  );
   background-size: 400% 100%;
   animation: sk-wave 1.8s ease-in-out infinite;
+  animation-fill-mode: both;
   flex-shrink: 0;
 }
 .genui-sfc-loading .sk-header-lines {

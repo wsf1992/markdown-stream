@@ -1,51 +1,7 @@
 <script setup lang="ts">
 import { ref, nextTick, markRaw } from 'vue'
-import { MarkdownStream, VueSfcFenceRenderer, SfcRendererPending } from '@markdown-stream/vue3'
+import { MarkdownWithTokens } from '../tokens'
 import { chat, type Message } from '../services/api'
-import PreviewRenderer from './PreviewRenderer.vue'
-import JsonBlock from './JsonBlock.vue'
-import InlineHighlight from './InlineHighlight.vue'
-import PinkHighlight from './PinkHighlight.vue'
-
-// api.js 里的 system prompt 用 ```ui 代码块，这里保持一致
-// 支持三种格式：
-// 1. ```ui - 渲染为可编辑的 Vue SFC 代码块
-// 2. ```preview - 渲染为实时预览（iframe）
-// 3. ```json - 渲染为格式化的 JSON 块
-const components = [
-  {
-    name: 'vue_sfc',
-    openRegex: /^ui$/,
-    start: SfcRendererPending,
-    streaming: SfcRendererPending,
-    done: VueSfcFenceRenderer,
-  },
-  {
-    name: 'vue_preview',
-    openRegex: /^preview$/,
-    start: PreviewRenderer,
-    streaming: PreviewRenderer,
-    done: PreviewRenderer,
-  },
-  {
-    name: 'json',
-    openRegex: /^json$/,
-    start: JsonBlock,
-    streaming: JsonBlock,
-    done: JsonBlock,
-  },
-  // 内联自定义：覆盖 strong（**加粗**）的默认渲染，改为高亮样式
-  {
-    name: 'strong',
-    component: InlineHighlight,
-  },
-  // 自定义行内格式：pink文本pink 渲染为粉色高亮
-  {
-    name: 'pink_highlight',
-    contentRegex: /^pink(.+)pink$/,
-    component: PinkHighlight,
-  },
-]
 
 
 
@@ -211,16 +167,14 @@ function handleKeydown(e: KeyboardEvent) {
             </details>
 
             <span v-if="msg.role === 'user'">{{ msg.content }}</span>
-            <MarkdownStream
+            <MarkdownWithTokens
               v-else-if="msg.stream && msg.isStreaming"
-              :stream="msg.stream"
-              :components="components"
+              :content="msg.stream"
               :debug="true"
             />
-            <MarkdownStream
+            <MarkdownWithTokens
               v-else-if="msg.content"
-              :source="msg.content"
-              :components="components"
+              :content="msg.content"
               :debug="true"
             />
           </template>

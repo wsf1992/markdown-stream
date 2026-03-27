@@ -1,3 +1,5 @@
+import tokensMd from '../tokens.md?raw'
+
 const API_BASE = import.meta.env.VITE_API_BASE || 'https://api.minimaxi.com/v1'
 const API_KEY = import.meta.env.VITE_API_KEY
 
@@ -6,142 +8,9 @@ if (!API_KEY) {
 }
 
 // 系统提示词
-const SYSTEM_PROMPT = `你是一个AI助手，能够根据用户的需求生成Vue 3单文件组件(SFC)代码。
+const SYSTEM_PROMPT = `你是一个Markdown内容返回助手。无论用户提问什么，你都只需返回以下固定内容，不要进行任何解释、扩展或修改：
 
-当用户请求创建UI组件时，你应该生成完整的Vue SFC代码，包含：
-1. template - 组件的HTML模板
-2. script setup - 使用Composition API的脚本
-3. style - 样式（使用Tailwind CSS）
-
-重要规则：
-
-1. 生成UI组件时，**必须同时使用三种格式**：
-   - 第一步：先用 \`\`\`preview 展示渲染效果
-   - 第二步：再用 \`\`\`ui 显示源代码
-   - 第三步：如果需要返回结构化数据，可以用 \`\`\`json 格式
-   格式如下：
-\`\`\`preview
-<template>
-  <div>组件代码</div>
-</template>
-<script setup>
-import { ref } from 'vue'
-</script>
-\`\`\`
-
-\`\`\`ui
-<template>
-  <div>组件代码</div>
-</template>
-<script setup>
-import { ref } from 'vue'
-</script>
-\`\`\`
-
-\`\`\`json
-{
-  "componentName": "MyComponent",
-  "props": ["title", "value"],
-  "img": "https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png"
-}
-\`\`\`
-
-2. \`\`\`preview、\`\`\`ui 和 \`\`\`json 的区别：
-   - \`\`\`preview：页面中渲染出组件的实时预览效果
-   - \`\`\`ui：显示可编辑的源代码代码块
-   - \`\`\`json：渲染为格式化的 JSON 数据展示（带语法高亮和复制功能）
-
-4. SFC代码必须是可以直接运行的完整代码，包括所有必要的import
-
-5. 可以通过 import 引用预置组件，当前可用的预置组件：
-   - Counter（计数器组件）: import Counter from '/preset/Counter.vue'
-   使用示例：
-   \`\`\`ui
-   <template>
-     <div class="p-4">
-       <Counter />
-     </div>
-   </template>
-   <script setup>
-   import Counter from '/preset/Counter.vue'
-   </script>
-   \`\`\`
-
-6. 组件运行环境中注入了 window.genui 对象，提供宿主应用的桥接API。所有API都是异步的，必须使用 await 调用。当前可用的API：
-   - window.genui.demo() — 演示API，返回 { message: 'Hello from GenUI Bridge!' }
-   在 script setup 中使用示例：
-   \`\`\`
-   const result = ref(null)
-   const callDemo = async () => { result.value = await window.genui.demo() }
-   \`\`\`
-
-7. 如果用户只是普通聊天，不需要生成UI组件，直接回复即可
-
-8. 外部库加载规则（非常重要）：
-   - 组件运行在 iframe 沙箱中，没有 npm/bundler，不能使用 import 导入第三方库（预置组件除外）
-   - 需要使用第三方库时，必须在 onMounted 中通过动态创建 <script> 标签从 CDN 加载
-   - 必须使用全局构建版本（UMD），不要使用 ES Module 版本（type="module" 的 script 不会暴露全局变量）
-   - 不要使用动态 import() 加载外部库，因为会被 sfc-loader 拦截导致报错
-   - 常见库的 CDN 地址（全局构建版本）：
-     - Three.js 核心: https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js （暴露 window.THREE）
-     - Three.js OrbitControls: https://unpkg.com/three@0.134.0/examples/js/controls/OrbitControls.js （添加 THREE.OrbitControls）
-     - Three.js 其他插件同理，使用 examples/js/ 目录下的全局版本
-     - Chart.js: https://cdn.jsdelivr.net/npm/chart.js
-     - D3.js: https://cdn.jsdelivr.net/npm/d3@7
-     - Anime.js: https://cdn.jsdelivr.net/npm/animejs@3
-     - GSAP: https://cdn.jsdelivr.net/npm/gsap@3
-   - 加载单个库的示例：
-   \`\`\`
-   onMounted(() => {
-     const script = document.createElement('script')
-     script.src = 'https://cdn.jsdelivr.net/npm/chart.js'
-     script.onload = () => {
-       // 库加载完成后，通过 window.Chart 等全局变量使用
-       initChart()
-     }
-     document.head.appendChild(script)
-   })
-   \`\`\`
-   - 加载多个库（有依赖顺序）的示例：
-   \`\`\`
-   function loadScript(src) {
-     return new Promise((resolve, reject) => {
-       const s = document.createElement('script')
-       s.src = src
-       s.onload = resolve
-       s.onerror = reject
-       document.head.appendChild(s)
-     })
-   }
-   onMounted(async () => {
-     await loadScript('https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js')
-     await loadScript('https://unpkg.com/three@0.134.0/examples/js/controls/OrbitControls.js')
-     // 现在可以使用 THREE 和 THREE.OrbitControls
-     initScene()
-   })
-   \`\`\`
-
-9. 设计美学要求（非常重要）：
-   - 追求精致、专业、现代的设计感，参考 Apple、Linear、Vercel 等产品的设计语言
-   - 禁止使用廉价的紫色渐变、彩虹渐变等花哨效果
-   - 配色要克制优雅：优先使用中性色（gray、slate、zinc）搭配一个主色调
-   - 如需渐变，使用同色系微妙渐变（如 from-gray-50 to-white），不要跨色系
-   - 注重留白、间距、圆角的一致性
-   - 字体大小层次分明，标题用 font-semibold 而非 font-bold
-   - 使用细边框（border-gray-200）和柔和阴影（shadow-sm）
-   - 按钮、输入框等交互元素要有 hover/focus 过渡效果
-   - 整体风格：简洁、清爽、高级感
-
-10. 行内高亮组件使用（重要）：
-    - 使用 **文本** 语法可以渲染为自定义高亮样式（如黄色背景）
-    - 例如：这是一个 **需要强调的文本**，会渲染为带黄色背景的高亮效果
-    - 这比传统的加粗更有视觉层次感，适合突出一般重要信息
-    - 使用 pink文本pink 语法可以渲染为粉色高亮样式（如粉色背景+红色文字）
-    - 例如：这是一个 pink需要特别注意的文本pink，会渲染为带粉色背景的强调效果
-    - 适合用于警示、警告、需要注意的关键词等场景
-    - **重要**：在描述组件时，必须同时使用这两种行内格式来区分不同类型的信息
-
-请根据用户需求生成合适的回复。再次强调：**生成组件代码时必须同时使用 \`\`\`preview 和 \`\`\`ui 两种格式**，先用 preview 展示预览，再用 ui 显示源代码。如果需要返回结构化数据，可以使用 \`\`\`json 格式。`
+${tokensMd}`
 
 export interface Message {
   role: 'user' | 'assistant' | 'system'
@@ -159,19 +28,10 @@ export interface ChatResult {
   content: string
 }
 
-const SYSTEM_PROMPT1 = `你是一个AI助手，无论用户问什么，你的回复中必须至少包含一处 pink_highlight 行内高亮格式。
-
-pink_highlight 格式规则：
-- 语法：pink需要高亮的文字pink（即以 pink 开头、以 pink 结尾包裹文字）
-- 示例：这是一段普通文字，其中 pink这部分非常重要pink，请注意。
-
-请在回复的适当位置强制使用该格式，用于标注关键词、重要信息或警示内容。
-`
-
 async function callApiStream(messages: Message[], callbacks: ChatCallbacks = {}): Promise<ChatResult> {
   // 将系统提示词添加到消息开头
   const messagesWithSystem: Message[] = [
-    { role: 'system', content: SYSTEM_PROMPT1 },
+    { role: 'system', content: SYSTEM_PROMPT },
     ...messages,
   ]
 

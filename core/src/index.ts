@@ -27,7 +27,7 @@ export interface MarkdownProcessor {
   flush(): StatefulToken[]
   snapshot(): StatefulToken[]
   reset(): void
-  use(tokenType: TokenTypeDefinition): this
+  use(tokenType: TokenTypeDefinition): MarkdownProcessor
 }
 
 export function defineTokenType(def: TokenTypeDefinition): TokenTypeDefinition {
@@ -62,7 +62,7 @@ export function createMarkdownProcessor(
     flush(): StatefulToken[] {
       return session.flush()
     },
-    use(tokenType: TokenTypeDefinition): typeof processor {
+    use(tokenType: TokenTypeDefinition): MarkdownProcessor {
       session.use(tokenType)
       return processor
     },

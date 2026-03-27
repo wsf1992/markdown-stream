@@ -71,42 +71,17 @@ export default defineComponent({
 
     provide(COMPONENTS_INJECT_KEY, buildComponentMap())
 
+    // Priority: content > source > stream
     watch(
-      () => props.content,
-      (val) => {
-        if (val !== undefined) {
-          reset()
-          if (typeof val === 'string') {
-            parse(val)
-          } else {
-            consume(val)
-          }
-        }
-      },
-      { immediate: true }
-    )
-
-    watch(
-      () => props.source,
-      (src) => {
-        if (src !== undefined) {
-          reset()
-          parse(src)
-        }
-      },
-      { immediate: true }
-    )
-
-    watch(
-      () => props.stream,
-      (stream) => {
-        if (stream !== undefined) {
-          reset()
-          if (typeof stream === 'string') {
-            parse(stream)
-          } else {
-            consume(stream)
-          }
+      [() => props.content, () => props.source, () => props.stream],
+      ([content, source, stream]) => {
+        const value = content ?? source ?? stream
+        if (value === undefined) return
+        reset()
+        if (typeof value === 'string') {
+          parse(value)
+        } else {
+          consume(value)
         }
       },
       { immediate: true }
@@ -121,7 +96,7 @@ export default defineComponent({
         {
           class: 'ms-root',
           'data-streaming': isStreaming.value ? '' : undefined,
-          'data-no-cursor': props.cursor === false ? '' : undefined,
+          'data-no-cursor': !props.cursor ? '' : undefined,
         },
         children
       )
