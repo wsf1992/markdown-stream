@@ -10,30 +10,18 @@ npm install @markdown-stream/vue3 @markdown-stream/core vue
 
 ---
 
-## 一次性渲染
+## 快速上手：统一 `content` prop
 
-传入 `source` 字符串，直接渲染完整 Markdown。
-
-```vue
-<script setup lang="ts">
-import { MarkdownStream } from '@markdown-stream/vue3'
-</script>
-
-<template>
-  <MarkdownStream source="# Hello\n\nThis is **markdown**." />
-</template>
-```
-
----
-
-## 流式输入
-
-传入 `stream`（`AsyncIterable<string>`），随 chunk 到达实时更新视图。
+无需区分数据来源，直接传 `content`——字符串一次性渲染，`AsyncIterable` 流式渲染：
 
 ```vue
 <script setup lang="ts">
 import { MarkdownStream } from '@markdown-stream/vue3'
 
+// 一次性字符串
+const markdownString = '# Hello\n\nThis is **markdown**.'
+
+// 或流式 AsyncIterable（来自 AI / SSE 等）
 async function* aiStream() {
   yield '# Title\n\n'
   yield 'Streaming content...'
@@ -41,15 +29,20 @@ async function* aiStream() {
 </script>
 
 <template>
-  <MarkdownStream :stream="aiStream()" />
+  <!-- 传字符串 -->
+  <MarkdownStream :content="markdownString" />
+
+  <!-- 传 AsyncIterable -->
+  <MarkdownStream :content="aiStream()" />
 </template>
 ```
 
 ---
 
+
 ## 自定义 Token 与组件
 
-通过 `components` 数组同时定义「如何解析」和「如何渲染」，组件直接传入，无需 `markRaw()`。
+通过 `components` 数组同时定义「如何解析」和「如何渲染」，组件直接传入
 
 ```ts
 interface CustomTokenDefinition {
@@ -195,6 +188,118 @@ const imgUrl = computed(() => {
   />
 </template>
 ```
+
+---
+
+## 内联 Token 拦截
+
+除了代码块等块级 token，你还可以拦截行内（inline）语法，替换默认渲染或定义全新的行内样式。
+
+### 覆盖已有内联 Token
+
+直接用 `name` 指向已有内联 token（如 `strong`、`em`、`code_inline`），传入自定义 `component`，不改变任何解析逻辑：
+
+| 内置名称 | 对应 Markdown 语法 |
+|---|---|
+| `strong` | `**加粗**` 或 `__加粗__` |
+| `em` | `*斜体*` 或 `_斜体_` |
+| `code_inline` | `` `行内代码` `` |
+
+```vue
+<template>
+  <MarkdownStream
+    :content="markdown"
+    :components="[
+      { name: 'strong', component: MyHighlight },
+    ]"
+  />
+</template>
+```
+
+自定义组件通过 `token.children[0].content` 取得被包裹的文本：
+
+```vue
+<!-- MyHighlight.vue -->
+<script setup lang="ts">
+import type { StatefulToken } from '@markdown-stream/core'
+defineProps<{ token: StatefulToken }>()
+</script>
+
+<template>
+  <span style="background:#fef08a; padding:2px 4px; border-radius:3px; color:#854d0e;">
+    {{ token.children?.[0]?.content }}
+  </span>
+</template>
+```
+
+效果：`**重要文字**` 将渲染为黄色高亮而不是加粗。
+
+---
+
+### contentRegex：自定义行内语法
+
+使用 `contentRegex` 可以匹配任意行内文本片段，无需改动 Markdown 解析器。组件通过 `token.content` 获取正则捕获后的内容。
+
+**示例：将 `pink文字pink` 渲染为粉色高亮**
+
+Markdown 原文：
+
+```md
+这段话里有一个 pink重要提示pink 需要特别关注。
+```
+
+注册配置：
+
+```vue
+<template>
+  <MarkdownStream
+    :content="markdown"
+    :components="[
+      {
+        name: 'pink_highlight',
+        contentRegex: /^pink(.+)pink$/,
+        component: PinkHighlight,
+      },
+    ]"
+  />
+</template>
+```
+
+`PinkHighlight.vue` 直接读取 `token.content`（已提取捕获组内容）：
+
+```vue
+<!-- PinkHighlight.vue -->
+<script setup lang="ts">
+import type { StatefulToken } from '@markdown-stream/core'
+defineProps<{ token: StatefulToken }>()
+</script>
+
+<template>
+  <span style="background:#fce7f3; padding:2px 4px; border-radius:3px; color:#be185d; font-weight:500;">
+    {{ token.content }}
+  </span>
+</template>
+```
+
+---
+
+### 同时使用多种内联拦截
+
+```vue
+<template>
+  <MarkdownStream
+    :content="markdown"
+    :components="[
+      { name: 'strong',        component: YellowHighlight },
+      { name: 'em',            component: BlueItalic      },
+      { name: 'code_inline',   component: StyledCode      },
+      { name: 'pink_highlight', contentRegex: /^pink(.+)pink$/, component: PinkHighlight },
+    ]"
+  />
+</template>
+```
+
+> **注意**：`contentRegex` 匹配的是 inline token 内的 `text` 节点内容，正则捕获组（第一个括号）的内容会作为 `token.content` 传给组件。
 
 ---
 

@@ -28,6 +28,8 @@ export interface TokenTypeDefinition {
   match(ctx: TokenMatchContext): boolean | TokenMatchResult
   build(ctx: TokenBuildContext): Omit<StatefulToken, 'id' | 'state'>
   finalize?(token: StatefulToken, ctx: FinalizeContext): boolean
+  // For inline content matching (e.g., pink...pink)
+  matchInlineContent?(content: string): TokenMatchResult | null
 }
 
 // Helper: find matching close token
@@ -345,5 +347,9 @@ export class TokenRegistry {
 
   getDefaultTypes(): TokenTypeDefinition[] {
     return [...defaultTypes]
+  }
+
+  getTokenDefinitions(): TokenTypeDefinition[] {
+    return [...this.types]
   }
 }

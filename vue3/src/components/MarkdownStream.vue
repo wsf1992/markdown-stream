@@ -10,6 +10,10 @@ import { extractTokenTypes, extractComponentMap } from '../renderers/build-token
 export default defineComponent({
   name: 'MarkdownStream',
   props: {
+    content: {
+      type: [Object, String] as PropType<string | AsyncIterable<string>>,
+      default: undefined,
+    },
     source: {
       type: String as PropType<string>,
       default: undefined,
@@ -62,6 +66,21 @@ export default defineComponent({
     }
 
     provide(COMPONENTS_INJECT_KEY, buildComponentMap())
+
+    watch(
+      () => props.content,
+      (val) => {
+        if (val !== undefined) {
+          reset()
+          if (typeof val === 'string') {
+            parse(val)
+          } else {
+            consume(val)
+          }
+        }
+      },
+      { immediate: true }
+    )
 
     watch(
       () => props.source,

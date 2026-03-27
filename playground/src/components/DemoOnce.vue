@@ -1,10 +1,15 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { MarkdownStream } from '@markdown-stream/vue3'
+import PinkHighlight from './PinkHighlight.vue'
 
 const DEFAULT = `# 一次性渲染示例
 
 这是一段**粗体**和*斜体*文字，还有 \`inline code\`。
+
+pink1这是粉色高亮文本pink1
+
+2432423pink这是粉色高亮文本pink23423423
 
 ## 列表
 
@@ -39,6 +44,15 @@ const rendered = ref(DEFAULT)
 function render() {
   rendered.value = source.value
 }
+
+const components = [
+  {
+    name: 'pink_highlight',
+    contentRegex: /^pink1(.+)pink1$/,
+    component: PinkHighlight,
+  },
+]
+
 </script>
 
 <template>
@@ -53,7 +67,7 @@ function render() {
       </div>
       <div class="box">
         <h3>渲染结果</h3>
-        <MarkdownStream :source="rendered" />
+        <MarkdownStream :source="rendered" :components="components" debug />
       </div>
     </div>
   </div>

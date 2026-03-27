@@ -4,6 +4,8 @@ import { MarkdownStream, VueSfcFenceRenderer, SfcRendererPending } from '@markdo
 import { chat, type Message } from '../services/api'
 import PreviewRenderer from './PreviewRenderer.vue'
 import JsonBlock from './JsonBlock.vue'
+import InlineHighlight from './InlineHighlight.vue'
+import PinkHighlight from './PinkHighlight.vue'
 
 // api.js 里的 system prompt 用 ```ui 代码块，这里保持一致
 // 支持三种格式：
@@ -31,6 +33,17 @@ const components = [
     start: JsonBlock,
     streaming: JsonBlock,
     done: JsonBlock,
+  },
+  // 内联自定义：覆盖 strong（**加粗**）的默认渲染，改为高亮样式
+  {
+    name: 'strong',
+    component: InlineHighlight,
+  },
+  // 自定义行内格式：pink文本pink 渲染为粉色高亮
+  {
+    name: 'pink_highlight',
+    contentRegex: /^pink(.+)pink$/,
+    component: PinkHighlight,
   },
 ]
 

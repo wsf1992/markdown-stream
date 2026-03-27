@@ -6,6 +6,7 @@ import CodeStreaming from './CodeStreaming.vue'
 import CodeBlock from './CodeBlock.vue'
 import CalloutBlock from './CalloutBlock.vue'
 import PreviewRenderer from './PreviewRenderer.vue'
+import InlineHighlight from './InlineHighlight.vue'
 
 // 自定义 components 配置
 const components = [
@@ -40,6 +41,11 @@ const components = [
     openRegex: /^callout-danger$/,
     component: CalloutBlock,
   },
+  // 内联自定义：覆盖 strong（**加粗**）的默认渲染，改为高亮样式
+  {
+    name: 'strong',
+    component: InlineHighlight,
+  },
 ]
 
 const CHUNKS = [
@@ -58,7 +64,10 @@ const CHUNKS = [
   'JSON 预览示例：\n\n',
   '```json-preview\n',
   '{"title": "用户卡片", "name": "张三", "age": 28, "email": "zhangsan@example.com", "buttons": ["编辑", "删除"]}',
-  '\n```\n',
+  '\n```\n\n',
+  '## 内联自定义示例\n\n',
+  '这是一个 **自定义高亮** 组件，覆盖了默认的 **加粗** 渲染。\n\n',
+  '可以看到 **黄色高亮** 效果，而不是传统的 **加粗** 样式。\n',
 ]
 
 const delay = ref(100)

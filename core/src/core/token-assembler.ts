@@ -1,4 +1,5 @@
 import type { RawToken, StatefulToken } from '../types/token.js'
+import type { TokenTypeDefinition } from './token-registry.js'
 import { TokenRegistry } from './token-registry.js'
 
 // Generate a stable id based on type + path + index
@@ -37,6 +38,11 @@ function buildInlineChildren(
   let i = 0
   const typeCount: Record<string, number> = {}
 
+  // Get contentRegex token definitions for inline matching
+  const contentRegexDefs = registry
+    ? registry.getTokenDefinitions().filter((def) => def.matchInlineContent)
+    : []
+
   while (i < tokens.length) {
     const token = tokens[i]
 
@@ -67,6 +73,143 @@ function buildInlineChildren(
         result.push(statefulToken)
         i = closeIndex + 1
         continue
+      }
+    }
+
+    // Try contentRegex match for custom inline tokens (e.g., pink...pink)
+    if (token.type === 'text' && contentRegexDefs.length > 0) {
+      const content = token.content
+
+      // Check if it's a full match (starting at index 0)
+      let fullMatch = false
+      let fullMatchDef: TokenTypeDefinition | undefined
+      let fullMatchResult: any
+
+      for (const def of contentRegexDefs) {
+        const matchResult = def.matchInlineContent!(content)
+        const match = matchResult?.data?.match as RegExpExecArray | undefined
+        if (matchResult && match && match.index === 0) {
+          fullMatch = true
+          fullMatchDef = def
+          fullMatchResult = matchResult
+          break
+        }
+      }
+
+      // If full match, handle it directly
+      if (fullMatch && fullMatchDef && fullMatchResult) {
+        const tokenName = fullMatchDef.name
+        typeCount[tokenName] = (typeCount[tokenName] ?? 0) + 1
+        const id = generateId(tokenName, parentPath, typeCount[tokenName] - 1)
+
+        const buildCtx = {
+          matchResult: fullMatchResult,
+          tokens,
+          index: i,
+          path: parentPath,
+          buildChildren: (innerTokens: RawToken[], innerPath: string[]) =>
+            buildInlineChildren(innerTokens, innerPath, registry),
+        }
+
+        const partial = fullMatchDef.build(buildCtx)
+        const statefulToken: StatefulToken = {
+          id,
+          state: 'done',
+          ...partial,
+        }
+
+        result.push(statefulToken)
+        i++
+        continue
+      }
+
+      // If not a full match, try to split the text token into multiple parts
+      if (!fullMatch && contentRegexDefs.length > 0) {
+        let remainingContent = content
+        let hasPartialMatch = false
+        const parts: { text: string; isMatch: boolean; def?: TokenTypeDefinition; matchResult?: any }[] = []
+
+        while (remainingContent.length > 0) {
+          let bestMatch: { def: TokenTypeDefinition; matchResult: any; match: RegExpExecArray } | null = null
+
+          for (const def of contentRegexDefs) {
+            const matchResult = def.matchInlineContent!(remainingContent)
+            if (matchResult && matchResult.data?.match) {
+              bestMatch = { def, matchResult, match: matchResult.data.match as RegExpExecArray }
+              break
+            }
+          }
+
+          if (bestMatch) {
+            // Check if there's text before the match
+            const matchIndex = bestMatch.match.index
+            if (matchIndex > 0) {
+              parts.push({
+                text: remainingContent.slice(0, matchIndex),
+                isMatch: false,
+              })
+            }
+
+            // Add the matched part
+            parts.push({
+              text: remainingContent.slice(matchIndex, matchIndex + bestMatch.match[0].length),
+              isMatch: true,
+              def: bestMatch.def,
+              matchResult: bestMatch.matchResult,
+            })
+
+            // Move past the prefix text and the matched text
+            remainingContent = remainingContent.slice(matchIndex + bestMatch.match[0].length)
+            hasPartialMatch = true
+          } else {
+            // No more matches, add remaining text
+            parts.push({
+              text: remainingContent,
+              isMatch: false,
+            })
+            break
+          }
+        }
+
+        // Process all parts
+        if (hasPartialMatch) {
+          for (const part of parts) {
+            if (part.isMatch && part.def && part.matchResult) {
+              const tokenName = part.def.name
+              typeCount[tokenName] = (typeCount[tokenName] ?? 0) + 1
+              const id = generateId(tokenName, parentPath, typeCount[tokenName] - 1)
+
+              const buildCtx = {
+                matchResult: part.matchResult,
+                tokens,
+                index: i,
+                path: parentPath,
+                buildChildren: (innerTokens: RawToken[], innerPath: string[]) =>
+                  buildInlineChildren(innerTokens, innerPath, registry),
+              }
+
+              const partial = part.def.build(buildCtx)
+              const statefulToken: StatefulToken = {
+                id,
+                state: 'done',
+                ...partial,
+              }
+              result.push(statefulToken)
+            } else if (part.text.length > 0) {
+              // Add plain text part
+              typeCount['text'] = (typeCount['text'] ?? 0) + 1
+              const id = generateId('text', parentPath, typeCount['text'] - 1)
+              result.push({
+                id,
+                type: 'text',
+                state: 'done',
+                content: part.text,
+              })
+            }
+          }
+          i++
+          continue
+        }
       }
     }
 

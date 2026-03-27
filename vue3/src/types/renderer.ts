@@ -38,6 +38,12 @@ export interface CustomTokenDefinition {
    * 仅在 openRegex 也存在时生效。
    */
   closeRegex?: string | RegExp
+  /**
+   * 匹配 inline token 的内容（需要配合 closeRegex 或单独使用）。
+   * 当 openRegex/closeRegex 不适用时，使用 contentRegex 匹配 inline 文本内容。
+   * 例如：contentRegex: /^pink(.+)pink$/ 会匹配 "pink文本pink"
+   */
+  contentRegex?: string | RegExp
 }
 
 /** 兼容旧格式：直接传 Record<name, Component> 也可覆盖渲染 */

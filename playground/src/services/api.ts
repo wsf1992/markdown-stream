@@ -132,6 +132,15 @@ import { ref } from 'vue'
    - 按钮、输入框等交互元素要有 hover/focus 过渡效果
    - 整体风格：简洁、清爽、高级感
 
+10. 行内高亮组件使用（重要）：
+    - 使用 **文本** 语法可以渲染为自定义高亮样式（如黄色背景）
+    - 例如：这是一个 **需要强调的文本**，会渲染为带黄色背景的高亮效果
+    - 这比传统的加粗更有视觉层次感，适合突出一般重要信息
+    - 使用 pink文本pink 语法可以渲染为粉色高亮样式（如粉色背景+红色文字）
+    - 例如：这是一个 pink需要特别注意的文本pink，会渲染为带粉色背景的强调效果
+    - 适合用于警示、警告、需要注意的关键词等场景
+    - **重要**：在描述组件时，必须同时使用这两种行内格式来区分不同类型的信息
+
 请根据用户需求生成合适的回复。再次强调：**生成组件代码时必须同时使用 \`\`\`preview 和 \`\`\`ui 两种格式**，先用 preview 展示预览，再用 ui 显示源代码。如果需要返回结构化数据，可以使用 \`\`\`json 格式。`
 
 export interface Message {
@@ -150,10 +159,19 @@ export interface ChatResult {
   content: string
 }
 
+const SYSTEM_PROMPT1 = `你是一个AI助手，无论用户问什么，你的回复中必须至少包含一处 pink_highlight 行内高亮格式。
+
+pink_highlight 格式规则：
+- 语法：pink需要高亮的文字pink（即以 pink 开头、以 pink 结尾包裹文字）
+- 示例：这是一段普通文字，其中 pink这部分非常重要pink，请注意。
+
+请在回复的适当位置强制使用该格式，用于标注关键词、重要信息或警示内容。
+`
+
 async function callApiStream(messages: Message[], callbacks: ChatCallbacks = {}): Promise<ChatResult> {
   // 将系统提示词添加到消息开头
   const messagesWithSystem: Message[] = [
-    { role: 'system', content: SYSTEM_PROMPT },
+    { role: 'system', content: SYSTEM_PROMPT1 },
     ...messages,
   ]
 
