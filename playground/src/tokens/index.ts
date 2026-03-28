@@ -3,7 +3,6 @@ import { MarkdownStream } from '@markdown-stream/vue3'
 import { VueSfcFenceRenderer, SfcRendererPending } from '@markdown-stream/vue3'
 import PreviewRenderer from '../components/PreviewRenderer.vue'
 import JsonBlock from '../components/JsonBlock.vue'
-import InlineHighlight from '../components/InlineHighlight.vue'
 import PinkHighlight from '../components/PinkHighlight.vue'
 import CodeSkeleton from '../components/CodeSkeleton.vue'
 import CodeStreaming from '../components/CodeStreaming.vue'
@@ -19,7 +18,6 @@ export const tokenComponents = [
   { name: 'callout-info',    openRegex: /^callout-info$/,    component: markRaw(CalloutBlock) },
   { name: 'callout-warning',openRegex: /^callout-warning$/, component: markRaw(CalloutBlock) },
   { name: 'callout-danger',  openRegex: /^callout-danger$/,  component: markRaw(CalloutBlock) },
-  { name: 'strong', openRegex: /^strong_open$/, closeRegex: /^strong_close$/, component: markRaw(InlineHighlight) },
   { name: 'pink_highlight', contentRegex: /^pink(.+)pink$/, component: markRaw(PinkHighlight) },
   { name: 'image', openRegex: /^image$/, component: markRaw(ImageToken) },
 ]

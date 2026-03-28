@@ -20,7 +20,7 @@ function render() {
     <div class="panel">
       <div class="box">
         <h3>Markdown 输入</h3>
-        <textarea v-model="source" />
+        <textarea v-model="source" :rows="100" />
       </div>
       <div class="box">
         <h3>渲染结果</h3>
