@@ -43,6 +43,42 @@ function buildInlineChildren(
     ? registry.getTokenDefinitions().filter((def) => def.matchInlineContent)
     : []
 
+  // Pre-pass: handle the case where linkify (or other inline rules) splits a custom token
+  // across multiple tokens (e.g., a URL inside image{...}image gets turned into a link).
+  // Only applies when non-text tokens are present (indicating linkify/inline-rule splitting).
+  const hasNonTextTokens =
+    tokens.length > 1 &&
+    tokens.some(
+      (t) => t.type !== 'text' && t.type !== 'softbreak' && t.type !== 'hardbreak',
+    )
+  if (contentRegexDefs.length > 0 && hasNonTextTokens) {
+    const fullText = tokens.reduce((acc, t) => {
+      if (t.type === 'text') return acc + (t.content ?? '')
+      if (t.type === 'softbreak' || t.type === 'hardbreak') return acc + '\n'
+      return acc
+    }, '')
+
+    // Check if any contentRegex matches exist in the reconstructed text
+    const hasAnyMatch = contentRegexDefs.some((def) => def.matchInlineContent!(fullText)?.data?.match != null)
+
+    if (hasAnyMatch) {
+      // Flatten to a single synthetic text token and re-process.
+      // This lets the regular full/partial match logic handle it correctly,
+      // regardless of whether the match spans the whole text or only part of it.
+      const syntheticToken: RawToken = {
+        type: 'text',
+        tag: '',
+        nesting: 0,
+        content: fullText,
+        attrs: null,
+        map: null,
+        children: null,
+        meta: null,
+      }
+      return buildInlineChildren([syntheticToken], parentPath, registry)
+    }
+  }
+
   while (i < tokens.length) {
     const token = tokens[i]
 
@@ -263,6 +299,7 @@ function buildInlineChildren(
         type: token.type,
         state: 'done',
         content: token.content || undefined,
+        meta: token.attrs ? { ...token.attrs } : undefined,
       }
       result.push(statefulToken)
       i++

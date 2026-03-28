@@ -181,6 +181,20 @@ export const defaultRenderers: MarkdownTokenComponentMap = {
     },
   }),
 
+  image: defineComponent({
+    props: ['token'],
+    setup(props: { token: StatefulToken }) {
+      return () =>
+        h('img', {
+          class: 'ms-token-image',
+          src: props.token.meta?.src as string | undefined,
+          alt: props.token.meta?.alt as string | undefined,
+          title: props.token.meta?.title as string | undefined,
+          ...stateAttrs(props.token),
+        })
+    },
+  }),
+
   inline: defineComponent({
     props: ['token'],
     setup(props: { token: StatefulToken }) {

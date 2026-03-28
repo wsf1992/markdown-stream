@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, nextTick, markRaw } from 'vue'
+import { ref, nextTick } from 'vue'
 import { MarkdownWithTokens } from '../tokens'
 import { chat, type Message } from '../services/api'
 
@@ -94,7 +94,7 @@ async function sendMessage() {
   // 在调用 chat 前就挂载流式视图，避免第一批 chunk 到达时 Vue 还没重渲染
   msg.isLoading = false
   msg.isStreaming = true
-  msg.stream = markRaw(toAsyncIterable())
+  msg.stream = toAsyncIterable()
 
   let prevLength = 0
 

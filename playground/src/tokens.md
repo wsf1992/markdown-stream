@@ -1,10 +1,16 @@
-# Token 演示
+# 自定义 Token 演示
 
-这是一段**粗体高亮**文字，用于强调重要信息。
+## 内联高亮
+
+这是一段 **粗体加粗** 文字，用于强调重要信息。
 
 pink这是粉色高亮文本pink，用于警示和强调关键内容。
 
-## 代码块（fence）- 三态渲染
+---
+
+## 代码块 — 三态渲染
+
+### TypeScript
 
 ```ts
 function greet(name: string) {
@@ -12,9 +18,26 @@ function greet(name: string) {
 }
 ```
 
+### JSON
+
+```json
+{
+  "name": "markdown-stream",
+  "version": "0.1.8",
+  "features": ["vue_sfc", "vue_preview", "json", "callout", "inline_highlight"],
+  "enabled": true,
+  "stats": {
+    "users": 1234,
+    "rating": 4.8
+  }
+}
+```
+
+---
+
 ## Vue SFC 代码块
 
-```ui
+````ui
 <template>
   <div class="counter-card">
     <h3 class="title">计数器</h3>
@@ -104,11 +127,13 @@ const count = ref(0)
   font-size: 1.05em;
 }
 </style>
-```
+````
 
-## Vue 预览代码块
+---
 
-```preview
+## Vue Preview 代码块
+
+````preview
 <template>
   <div class="preview-box">
     <h4>预览组件</h4>
@@ -119,22 +144,9 @@ const count = ref(0)
 <script setup>
 const now = new Date().toLocaleTimeString()
 <\/script>
-```
+````
 
-## JSON 代码块
-
-```json
-{
-  "name": "markdown-stream",
-  "version": "0.1.8",
-  "features": ["vue_sfc", "vue_preview", "json", "callout", "inline_highlight"],
-  "enabled": true,
-  "stats": {
-    "users": 1234,
-    "rating": 4.8
-  }
-}
-```
+---
 
 ## Callout 提示块
 
@@ -150,26 +162,40 @@ const now = new Date().toLocaleTimeString()
 危险操作，请确认！这是一个 **pink危险警告pink** 示例。
 ```
 
+---
+
 ## 列表
+
+**无序列表：**
 
 - 苹果
 - 香蕉
 - 橙子
 
+**有序列表：**
+
 1. 第一步
 2. 第二步
 3. 第三步
 
+---
+
 ## 引用
 
-> 这是一段引用文字，来自某位智者。里面也可以有 **粉色高亮 pink重点内容pink**。
+> 这是一段引用文字，来自某位智者。里面也可以有 **pink重点内容pink**。
+
+---
 
 ## 图片 Token
 
-```image
-{"url": "https://img0.baidu.com/it/u=3591665277,2616537962&fm=253&app=138&f=JPEG?w=800&h=1333", "name": "图片名称"}
-```
+image{"url": "https://img0.baidu.com/it/u=3591665277,2616537962&fm=253&app=138&f=JPEG?w=800&h=1333", "name": "图片名称"}image
 
-## 链接
+---
+
+## 外部链接 Token
+
+外部链接前置内容link{"url": "https://www.baidu.com", "name": "点击跳转百度"}link外部链接后置内容
+
+## Markdown 链接
 
 访问 [GitHub](https://github.com) 了解更多。

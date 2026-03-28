@@ -53,6 +53,7 @@ interface CustomTokenDefinition {
   done?: Component          // 仅 state === 'done' 时渲染
   openRegex?: string | RegExp   // 有此字段时自动注册解析规则
   closeRegex?: string | RegExp  // 配合 openRegex 匹配 open/close token 对
+  contentRegex?: RegExp         // 匹配行内文本片段，捕获组内容作为 token.content 传入组件
 }
 ```
 
@@ -299,7 +300,7 @@ defineProps<{ token: StatefulToken }>()
 </template>
 ```
 
-> **注意**：`contentRegex` 匹配的是 inline token 内的 `text` 节点内容，正则捕获组（第一个括号）的内容会作为 `token.content` 传给组件。
+> **注意**：`contentRegex` 匹配 inline 内容时，会将所有文本节点拼接后整体匹配。正则捕获组（第一个括号）的内容会作为 `token.content` 传给组件。即使内容中包含 URL（被 linkify 自动转换为链接），匹配仍然正常工作。
 
 ---
 

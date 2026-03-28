@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { MarkdownWithTokens } from '../tokens'
 import TEMPLATE from '../tokens.md?raw'
 
-const CHUNKS = TEMPLATE.split('\n').filter((line: string) => line)
+const CHUNKS = TEMPLATE.split('\n')
 
 const delay = ref(200)
 const stream = ref<AsyncIterable<string> | undefined>()
@@ -12,7 +12,7 @@ const isRunning = ref(false)
 async function* makeStream(ms: number): AsyncIterable<string> {
   for (const chunk of CHUNKS) {
     await new Promise(r => setTimeout(r, ms))
-    yield chunk
+    yield chunk + '\n'
   }
 }
 

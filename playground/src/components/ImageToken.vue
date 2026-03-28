@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { StatefulToken } from '@markdown-stream/core'
 const props = defineProps<{ token: StatefulToken }>()
 
@@ -7,15 +8,13 @@ interface ImageData {
   name?: string
 }
 
-function getImageData(token: StatefulToken): ImageData {
+const imageData = computed<ImageData>(() => {
   try {
-    return JSON.parse(token.content || '{}')
+    return JSON.parse(props.token.content || '{}')
   } catch {
     return { url: '', name: '' }
   }
-}
-
-const imageData = getImageData(props.token)
+})
 </script>
 
 <template>
