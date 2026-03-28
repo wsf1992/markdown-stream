@@ -1,6 +1,6 @@
 {
   "name": "@markdown-stream/vue3",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "type": "module",
   "files": [
     "dist"
@@ -15,6 +15,11 @@
     },
     "./style.css": "./dist/style.css"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wsf1992/markdown-stream"
+  },
+  "homepage": "https://github.com/wsf1992/markdown-stream",
   "publishConfig": {
     "access": "public"
   },
