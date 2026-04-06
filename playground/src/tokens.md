@@ -39,106 +39,75 @@ function greet(name: string) {
 
 ````ui
 <template>
-  <div class="counter-card">
-    <h3 class="title">计数器</h3>
-    <div class="row">
-      <button type="button" class="btn" @click="count++">+1</button>
-      <span class="value">当前值：<strong>{{ count }}</strong></span>
+  <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-6">
+    <div class="bg-white rounded-2xl shadow-lg shadow-slate-200/50 p-8 max-w-sm w-full border border-slate-100">
+      <!-- 卡片头部图标 -->
+      <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center mb-6 shadow-lg shadow-blue-500/30">
+        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+      </div>
+      
+      <!-- 卡片标题 -->
+      <h2 class="text-xl font-semibold text-slate-800 mb-3">
+        快速开始
+      </h2>
+      
+      <!-- 卡片描述 -->
+      <p class="text-slate-500 leading-relaxed mb-6">
+        开始探索无限可能，只需点击下方按钮即可开启你的创意之旅。
+      </p>
+      
+      <!-- 卡片按钮 -->
+      <button 
+        @click="handleClick"
+        class="w-full py-3 px-4 bg-slate-900 hover:bg-slate-800 text-white font-medium rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-slate-900/20 active:scale-[0.98]"
+      >
+        {{ buttonText }}
+      </button>
+      
+      <!-- 底部装饰线 -->
+      <div class="mt-6 flex items-center gap-3">
+        <div class="flex-1 h-px bg-slate-200"></div>
+        <span class="text-xs text-slate-400 uppercase tracking-wider">或者</span>
+        <div class="flex-1 h-px bg-slate-200"></div>
+      </div>
+      
+      <!-- 次要操作 -->
+      <button class="w-full mt-4 py-2.5 text-slate-600 hover:text-slate-900 font-medium transition-colors duration-200">
+        了解更多
+      </button>
     </div>
-    <p class="render-time" v-if="renderTime !== null">渲染耗时：{{ renderTime }} ms</p>
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted } from 'vue'
+<script setup lang="ts">
+import { ref } from 'vue'
 
-const count = ref(0)
-const renderTime = ref(null)
-const _t0 = performance.now()
-onMounted(() => {
-  renderTime.value = (performance.now() - _t0).toFixed(2)
-})
+const buttonText = ref('开始探索')
+const isLoading = ref(false)
+
+const handleClick = async () => {
+  isLoading.value = true
+  buttonText.value = '加载中...'
+  
+  // 模拟加载效果
+  setTimeout(() => {
+    buttonText.value = '完成！'
+    setTimeout(() => {
+      buttonText.value = '开始探索'
+      isLoading.value = false
+    }, 1000)
+  }, 1500)
+}
 </script>
 
 <style scoped>
-.counter-card {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 20px 22px;
-  max-width: 320px;
-  border-radius: 14px;
-  background: linear-gradient(145deg, #ffffff 0%, #f4f6fb 100%);
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  box-shadow:
-    0 1px 2px rgba(15, 23, 42, 0.06),
-    0 8px 24px rgba(15, 23, 42, 0.08);
-}
-
-.title {
-  margin: 0;
-  font-size: 1.125rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: #0f172a;
-}
-
-.row {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  flex-wrap: wrap;
-}
-
-.btn {
-  cursor: pointer;
-  border: none;
-  border-radius: 10px;
-  padding: 10px 18px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #fff;
-  background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.2) inset,
-    0 2px 6px rgba(37, 99, 235, 0.35);
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease,
-    filter 0.15s ease;
-}
-
-.btn:hover {
-  filter: brightness(1.05);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.25) inset,
-    0 4px 14px rgba(37, 99, 235, 0.45);
-}
-
-.btn:active {
-  transform: translateY(1px);
-  box-shadow:
-    0 1px 0 rgba(0, 0, 0, 0.08) inset,
-    0 2px 4px rgba(37, 99, 235, 0.3);
-}
-
-.value {
-  font-size: 0.95rem;
-  color: #475569;
-}
-
-.value strong {
-  font-variant-numeric: tabular-nums;
-  color: #0f172a;
-  font-size: 1.05em;
-}
-
-.render-time {
-  margin: 0;
-  font-size: 0.8rem;
-  color: #94a3b8;
+button:active {
+  transform: scale(0.98);
 }
 </style>
+
 ````
 
 ---
@@ -147,106 +116,75 @@ onMounted(() => {
 
 ````ui-shadow
 <template>
-  <div class="counter-card">
-    <h3 class="title">计数器</h3>
-    <div class="row">
-      <button type="button" class="btn" @click="count++">+1</button>
-      <span class="value">当前值：<strong>{{ count }}</strong></span>
+  <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-6">
+    <div class="bg-white rounded-2xl shadow-lg shadow-slate-200/50 p-8 max-w-sm w-full border border-slate-100">
+      <!-- 卡片头部图标 -->
+      <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center mb-6 shadow-lg shadow-blue-500/30">
+        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+      </div>
+      
+      <!-- 卡片标题 -->
+      <h2 class="text-xl font-semibold text-slate-800 mb-3">
+        快速开始
+      </h2>
+      
+      <!-- 卡片描述 -->
+      <p class="text-slate-500 leading-relaxed mb-6">
+        开始探索无限可能，只需点击下方按钮即可开启你的创意之旅。
+      </p>
+      
+      <!-- 卡片按钮 -->
+      <button 
+        @click="handleClick"
+        class="w-full py-3 px-4 bg-slate-900 hover:bg-slate-800 text-white font-medium rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-slate-900/20 active:scale-[0.98]"
+      >
+        {{ buttonText }}
+      </button>
+      
+      <!-- 底部装饰线 -->
+      <div class="mt-6 flex items-center gap-3">
+        <div class="flex-1 h-px bg-slate-200"></div>
+        <span class="text-xs text-slate-400 uppercase tracking-wider">或者</span>
+        <div class="flex-1 h-px bg-slate-200"></div>
+      </div>
+      
+      <!-- 次要操作 -->
+      <button class="w-full mt-4 py-2.5 text-slate-600 hover:text-slate-900 font-medium transition-colors duration-200">
+        了解更多
+      </button>
     </div>
-    <p class="render-time" v-if="renderTime !== null">渲染耗时：{{ renderTime }} ms</p>
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted } from 'vue'
+<script setup lang="ts">
+import { ref } from 'vue'
 
-const count = ref(0)
-const renderTime = ref(null)
-const _t0 = performance.now()
-onMounted(() => {
-  renderTime.value = (performance.now() - _t0).toFixed(2)
-})
+const buttonText = ref('开始探索')
+const isLoading = ref(false)
+
+const handleClick = async () => {
+  isLoading.value = true
+  buttonText.value = '加载中...'
+  
+  // 模拟加载效果
+  setTimeout(() => {
+    buttonText.value = '完成！'
+    setTimeout(() => {
+      buttonText.value = '开始探索'
+      isLoading.value = false
+    }, 1000)
+  }, 1500)
+}
 </script>
 
 <style scoped>
-.counter-card {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 20px 22px;
-  max-width: 320px;
-  border-radius: 14px;
-  background: linear-gradient(145deg, #ffffff 0%, #f4f6fb 100%);
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  box-shadow:
-    0 1px 2px rgba(15, 23, 42, 0.06),
-    0 8px 24px rgba(15, 23, 42, 0.08);
-}
-
-.title {
-  margin: 0;
-  font-size: 1.125rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: #0f172a;
-}
-
-.row {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  flex-wrap: wrap;
-}
-
-.btn {
-  cursor: pointer;
-  border: none;
-  border-radius: 10px;
-  padding: 10px 18px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #fff;
-  background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.2) inset,
-    0 2px 6px rgba(37, 99, 235, 0.35);
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease,
-    filter 0.15s ease;
-}
-
-.btn:hover {
-  filter: brightness(1.05);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.25) inset,
-    0 4px 14px rgba(37, 99, 235, 0.45);
-}
-
-.btn:active {
-  transform: translateY(1px);
-  box-shadow:
-    0 1px 0 rgba(0, 0, 0, 0.08) inset,
-    0 2px 4px rgba(37, 99, 235, 0.3);
-}
-
-.value {
-  font-size: 0.95rem;
-  color: #475569;
-}
-
-.value strong {
-  font-variant-numeric: tabular-nums;
-  color: #0f172a;
-  font-size: 1.05em;
-}
-
-.render-time {
-  margin: 0;
-  font-size: 0.8rem;
-  color: #94a3b8;
+button:active {
+  transform: scale(0.98);
 }
 </style>
+
 ````
 
 ---

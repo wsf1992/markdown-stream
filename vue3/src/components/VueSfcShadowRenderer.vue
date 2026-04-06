@@ -33,6 +33,7 @@ let copyResetTimer: number | null = null
 const shadowRoot = shallowRef<ShadowRoot | null>(null)
 const vueApp = shallowRef<any>(null)
 const headObserver = shallowRef<MutationObserver | null>(null)
+let tailwindSentinel: HTMLElement | null = null
 
 // 流式指标：elapsed/tps 随 token.content 变化重算，startTime/doneTime 来自 token.meta
 const streamElapsed = ref(0)
@@ -168,6 +169,8 @@ function ensureScripts(): Promise<void> {
 // --- Mirror <style> tags from document.head into shadow root (for Tailwind) ---
 
 function syncHeadStyles(sr: ShadowRoot) {
+  // 先清除旧的镜像，再全量克隆当前 head 中所有 style
+  sr.querySelectorAll('[data-shadow-mirror]').forEach((n) => n.remove())
   document.head.querySelectorAll('style').forEach((style) => {
     const clone = style.cloneNode(true) as HTMLStyleElement
     clone.setAttribute('data-shadow-mirror', '')
@@ -176,18 +179,13 @@ function syncHeadStyles(sr: ShadowRoot) {
 }
 
 function watchHeadStyles(sr: ShadowRoot): MutationObserver {
-  const observer = new MutationObserver((mutations) => {
-    for (const m of mutations) {
-      m.addedNodes.forEach((node) => {
-        if (node.nodeName === 'STYLE') {
-          const clone = node.cloneNode(true) as HTMLStyleElement
-          clone.setAttribute('data-shadow-mirror', '')
-          sr.appendChild(clone)
-        }
-      })
-    }
+  const observer = new MutationObserver(() => {
+    // Tailwind v4 会原地更新已有 <style> 的 textContent（characterData 变化），
+    // 而非添加新节点，所以需要 subtree + characterData 才能捕获，
+    // 每次变化都全量重同步。
+    syncHeadStyles(sr)
   })
-  observer.observe(document.head, { childList: true })
+  observer.observe(document.head, { childList: true, subtree: true, characterData: true })
   return observer
 }
 
@@ -196,6 +194,30 @@ function teardownApp() {
   vueApp.value = null
   headObserver.value?.disconnect()
   headObserver.value = null
+  tailwindSentinel?.remove()
+  tailwindSentinel = null
+}
+
+/**
+ * 将 Shadow DOM 内挂载元素的所有 class 透传到主文档的隐藏哨兵元素，
+ * 让 @tailwindcss/browser 能扫描到这些 class 并生成对应 CSS，
+ * 再由 watchHeadStyles 把生成的 <style> 镜像回 Shadow Root。
+ */
+function syncTailwindClasses(mountPoint: HTMLElement) {
+  const classes = new Set<string>()
+  mountPoint.querySelectorAll('[class]').forEach((el) => {
+    el.classList.forEach((c) => classes.add(c))
+  })
+  if (!classes.size) return
+
+  if (!tailwindSentinel) {
+    tailwindSentinel = document.createElement('div')
+    tailwindSentinel.setAttribute('aria-hidden', 'true')
+    tailwindSentinel.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden;pointer-events:none;'
+    document.body.appendChild(tailwindSentinel)
+  }
+  tailwindSentinel.className = [...classes].join(' ')
+  ;(window as any).tailwind?.scan?.()
 }
 
 function clearShadowRoot(sr: ShadowRoot) {
@@ -268,7 +290,7 @@ async function render() {
     app.mount(mountPoint)
     vueApp.value = app
 
-    // Measure render time after layout settles
+    // Measure render time after layout settles, then sync Tailwind classes
     requestAnimationFrame(() => {
       const renderTime = renderStartTime.value != null
         ? performance.now() - renderStartTime.value
@@ -278,6 +300,7 @@ async function render() {
         internalRenderTime.value = renderTime
         emit('render-success', { renderTime })
       }
+      syncTailwindClasses(mountPoint)
     })
   } catch (e: any) {
     renderStartTime.value = null
