@@ -1,12 +1,43 @@
 import type { StatefulToken } from '../types/token.js'
 
+/**
+ * 将流式计时字段合并进 token meta：
+ * - streamStartTime：token 首次出现时记录，后续更新中从 prevMeta 继承
+ * - streamDoneTime：token 转为 done 状态时记录
+ */
+function mergeTimingMeta(
+  tokenMeta: Record<string, unknown> | undefined,
+  prevMeta: Record<string, unknown> | undefined,
+  isNew: boolean,
+  isDone: boolean,
+): Record<string, unknown> {
+  const streamStartTime: number = isNew
+    ? Date.now()
+    : (prevMeta?.streamStartTime as number | undefined) ?? Date.now()
+  const result: Record<string, unknown> = { ...(tokenMeta ?? {}), streamStartTime }
+  if (isDone) result.streamDoneTime = Date.now()
+  return result
+}
+
+/** diffTokens 自身注入的计时字段，不参与内容相等性判断 */
+const TIMING_META_KEYS: ReadonlySet<string> = new Set(['streamStartTime', 'streamDoneTime'])
+
+function stripTimingMeta(meta: Record<string, unknown> | undefined): Record<string, unknown> | null {
+  if (!meta) return null
+  const result: Record<string, unknown> = {}
+  for (const [k, v] of Object.entries(meta)) {
+    if (!TIMING_META_KEYS.has(k)) result[k] = v
+  }
+  return Object.keys(result).length > 0 ? result : null
+}
+
 function tokensContentEqual(a: StatefulToken, b: StatefulToken): boolean {
   if (a.content !== b.content) return false
   if (a.type !== b.type) return false
 
-  // Compare meta
-  const aMeta = JSON.stringify(a.meta ?? null)
-  const bMeta = JSON.stringify(b.meta ?? null)
+  // Compare meta，排除计时字段（计时字段只存在于 prevToken，nextToken 由 assembler 生成时没有）
+  const aMeta = JSON.stringify(stripTimingMeta(a.meta))
+  const bMeta = JSON.stringify(stripTimingMeta(b.meta))
   if (aMeta !== bMeta) return false
 
   // Compare children
@@ -23,13 +54,21 @@ function tokensContentEqual(a: StatefulToken, b: StatefulToken): boolean {
 
 function applyStatesToTree(
   tokens: StatefulToken[],
-  state: StatefulToken['state']
+  state: StatefulToken['state'],
+  prevTokens?: StatefulToken[]
 ): StatefulToken[] {
-  return tokens.map((t) => ({
-    ...t,
-    state,
-    children: t.children ? applyStatesToTree(t.children, state) : undefined,
-  }))
+  const prevById = new Map<string, StatefulToken>()
+  if (prevTokens) {
+    for (const p of prevTokens) prevById.set(p.id, p)
+  }
+  return tokens.map((t) => {
+    const prev = prevById.get(t.id)
+    return {
+      ...t,
+      state,
+      children: t.children ? applyStatesToTree(t.children, state, prev?.children) : undefined,
+    }
+  })
 }
 
 export function diffTokens(
@@ -54,9 +93,10 @@ export function diffTokens(
       // All tokens get state = 'done'
       result.push({
         ...nextToken,
+        meta: mergeTimingMeta(nextToken.meta, prevToken?.meta, !prevToken, true),
         state: 'done',
         children: nextToken.children
-          ? applyStatesToTree(nextToken.children, 'done')
+          ? applyStatesToTree(nextToken.children, 'done', prevToken?.children)
           : undefined,
       })
       continue
@@ -72,6 +112,7 @@ export function diffTokens(
       const state = isLast ? 'streaming' : 'done'
       result.push({
         ...nextToken,
+        meta: mergeTimingMeta(nextToken.meta, undefined, true, state === 'done'),
         state,
         children: nextToken.children
           ? applyStatesToTree(nextToken.children, state)
@@ -82,9 +123,10 @@ export function diffTokens(
       const state = isLast ? 'streaming' : 'done'
       result.push({
         ...nextToken,
+        meta: mergeTimingMeta(nextToken.meta, prevToken.meta, false, state === 'done'),
         state,
         children: nextToken.children
-          ? applyStatesToTree(nextToken.children, state)
+          ? applyStatesToTree(nextToken.children, state, prevToken.children)
           : undefined,
       })
     } else {
@@ -93,9 +135,10 @@ export function diffTokens(
       if (!isLast && prevToken.state !== 'done') {
         result.push({
           ...nextToken,
+          meta: mergeTimingMeta(nextToken.meta, prevToken.meta, false, true),
           state: 'done',
           children: nextToken.children
-            ? applyStatesToTree(nextToken.children, 'done')
+            ? applyStatesToTree(nextToken.children, 'done', prevToken.children)
             : undefined,
         })
       }

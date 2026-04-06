@@ -9,34 +9,40 @@ function safeComp(c: Component | undefined): Component | undefined {
   return c ? markRaw(toRaw(c) as object as Component) : undefined
 }
 
+function toHandlerKey(eventName: string): string {
+  const normalized = eventName.replace(/(^|[-_:])(\w)/g, (_match, _prefix, ch: string) => ch.toUpperCase())
+  return `on${normalized}`
+}
+
 /**
- * 将 CustomTokenDefinition 中的 state 专属组件包装为单个状态路由组件。
+ * 将 CustomTokenDefinition 包装为单个渲染组件。
  *
- * 优先级：state 专属（start / streaming / done）> component（兜底）> null（不渲染）
- *
+ * component 统一处理所有 state（streaming / done），用户在组件内部自行判断 token.state。
  * 用户无需手动调用 markRaw()，直接传入组件对象即可。
  */
 export function makeStateRouter(def: CustomTokenDefinition): ReturnType<typeof defineComponent> {
-  // 在 setup 阶段一次性提取并 markRaw，避免每次 render 都调 toRaw
-  const startComp = safeComp(def.start)
-  const streamingComp = safeComp(def.streaming)
-  const doneComp = safeComp(def.done)
-  const fallbackComp = safeComp(def.component)
+  const comp = safeComp(def.component)
+  const extraProps = def.props ?? {}
+  // 将 on: { copy: fn } 转换为 Vue h() 期望的 onCopy 格式
+  const onHandlers = def.on
+    ? Object.fromEntries(
+        Object.entries(def.on).map(([key, fn]) => [
+          toHandlerKey(key),
+          fn,
+        ])
+      )
+    : {}
 
   return markRaw(
     defineComponent({
-      name: `StateRouter_${def.name}`,
+      name: `TokenRenderer_${def.name}`,
       props: {
         token: { type: Object as () => StatefulToken, required: true },
       },
       setup(props) {
         return (): VNode | null => {
-          const state = props.token.state as 'start' | 'streaming' | 'done'
-          const comp =
-            (state === 'start' ? startComp : state === 'streaming' ? streamingComp : doneComp)
-            ?? fallbackComp
           if (!comp) return null
-          return h(comp, { token: props.token })
+          return h(comp, { token: props.token, ...extraProps, ...onHandlers })
         }
       },
     })

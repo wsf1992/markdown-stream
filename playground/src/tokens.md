@@ -131,6 +131,59 @@ const count = ref(0)
 
 ---
 
+## Vue SFC — Shadow DOM 渲染
+
+````ui-shadow
+<template>
+  <div class="card">
+    <h3 class="title">🧮 Shadow DOM 计数器</h3>
+    <p class="desc">样式由 Shadow DOM 隔离，不受宿主页面影响</p>
+    <div class="row">
+      <button class="btn dec" @click="count > 0 && count--">−</button>
+      <span class="value">{{ count }}</span>
+      <button class="btn inc" @click="count++">+</button>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+const count = ref(0)
+</script>
+
+<style scoped>
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 24px 28px;
+  max-width: 360px;
+  border-radius: 16px;
+  background: linear-gradient(145deg, #f0f9ff 0%, #e0f2fe 100%);
+  border: 1px solid #bae6fd;
+  box-shadow: 0 4px 20px rgba(14, 165, 233, 0.12);
+  font-family: system-ui, sans-serif;
+}
+.title { margin: 0; font-size: 1.1rem; font-weight: 700; color: #0c4a6e; }
+.desc  { margin: 0; font-size: 0.85rem; color: #0369a1; }
+.row   { display: flex; align-items: center; gap: 20px; }
+.value { font-size: 2rem; font-weight: 800; color: #0c4a6e; min-width: 48px; text-align: center; }
+.btn {
+  width: 40px; height: 40px;
+  border: none; border-radius: 50%;
+  font-size: 1.4rem; font-weight: 700;
+  cursor: pointer; transition: transform .15s, filter .15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.inc { background: #0ea5e9; color: #fff; }
+.dec { background: #e0f2fe; color: #0369a1; }
+.btn:hover  { filter: brightness(1.08); }
+.btn:active { transform: scale(.93); }
+</style>
+````
+
+---
+
 ## Vue Preview 代码块
 
 ````preview
@@ -199,3 +252,58 @@ image{"url": "https://img0.baidu.com/it/u=3591665277,2616537962&fm=253&app=138&f
 ## Markdown 链接
 
 访问 [GitHub](https://github.com) 了解更多。
+
+好的！需求已确认，方案已形成。以下是万兴科技的**产品方案**：
+
+---
+
+## 🎯 万兴科技产品方案建议
+
+### 客户需求回顾
+
+| 维度 | 需求 |
+|------|------|
+| 客户名称 | 万兴科技集团股份有限公司（300624） |
+| 联系人 | 王总（CFO） |
+| 拟投资规模 | **4,000万元** |
+| 投资期限 | 6个月以上 |
+| 流动性要求 | 中等流动性 |
+| 风险偏好 | 稳健型 |
+
+---
+
+### 📊 推荐方案
+
+#### **广盈启新系列 · 打新产品组合**
+
+| 项目 | 内容 |
+|------|------|
+| **预期年化收益** | **3.0%**（中性收益） |
+| **产品类型** | 固收增强型 |
+| **流动性** | 中等（封闭期运作） |
+| **风险等级** | 稳健型 |
+
+---
+
+### 📈 资产配置
+
+| 资产类别 | 配置比例 | 说明 |
+|----------|----------|------|
+| 固收类仓位 | ≥**80%** | 债券打底，追求稳健收益 |
+| 打新策略仓位 | ~**15%** | 科创板/主板新股申购 |
+| 衍生品仓位 | ≤**5%** | 风险对冲工具 |
+
+---
+
+### ✅ 下一步建议
+
+| 步骤 | 操作 |
+|------|------|
+| 1 | 方案内部合规评审 |
+| 2 | 拜访王总展示方案细节 |
+| 3 | 完成产品合同签署 |
+| 4 | 4000万资金划转到位 |
+
+---
+
+现在让我提交最终产出物：

@@ -280,6 +280,142 @@ const defaultTypes: TokenTypeDefinition[] = [
       }
     },
   },
+
+  // table
+  {
+    name: 'table',
+    match(ctx: TokenMatchContext): boolean | TokenMatchResult {
+      const token = ctx.tokens[ctx.index]
+      if (token.type === 'table_open') {
+        const closeIdx = findCloseIndex(ctx.tokens, ctx.index, 'table_open', 'table_close')
+        return { consumed: closeIdx - ctx.index + 1 }
+      }
+      return false
+    },
+    build(ctx: TokenBuildContext): Omit<StatefulToken, 'id' | 'state'> {
+      const openToken = ctx.tokens[ctx.index]
+      const consumed = ctx.matchResult.consumed
+      const innerTokens = ctx.tokens.slice(ctx.index + 1, ctx.index + consumed - 1)
+      return {
+        type: 'table',
+        children: ctx.buildChildren(innerTokens, [...ctx.path, 'table']),
+        range: openToken.map ? { start: openToken.map[0], end: openToken.map[1] } : undefined,
+      }
+    },
+  },
+
+  // thead
+  {
+    name: 'thead',
+    match(ctx: TokenMatchContext): boolean | TokenMatchResult {
+      const token = ctx.tokens[ctx.index]
+      if (token.type === 'thead_open') {
+        const closeIdx = findCloseIndex(ctx.tokens, ctx.index, 'thead_open', 'thead_close')
+        return { consumed: closeIdx - ctx.index + 1 }
+      }
+      return false
+    },
+    build(ctx: TokenBuildContext): Omit<StatefulToken, 'id' | 'state'> {
+      const consumed = ctx.matchResult.consumed
+      const innerTokens = ctx.tokens.slice(ctx.index + 1, ctx.index + consumed - 1)
+      return {
+        type: 'thead',
+        children: ctx.buildChildren(innerTokens, [...ctx.path, 'thead']),
+      }
+    },
+  },
+
+  // tbody
+  {
+    name: 'tbody',
+    match(ctx: TokenMatchContext): boolean | TokenMatchResult {
+      const token = ctx.tokens[ctx.index]
+      if (token.type === 'tbody_open') {
+        const closeIdx = findCloseIndex(ctx.tokens, ctx.index, 'tbody_open', 'tbody_close')
+        return { consumed: closeIdx - ctx.index + 1 }
+      }
+      return false
+    },
+    build(ctx: TokenBuildContext): Omit<StatefulToken, 'id' | 'state'> {
+      const consumed = ctx.matchResult.consumed
+      const innerTokens = ctx.tokens.slice(ctx.index + 1, ctx.index + consumed - 1)
+      return {
+        type: 'tbody',
+        children: ctx.buildChildren(innerTokens, [...ctx.path, 'tbody']),
+      }
+    },
+  },
+
+  // tr
+  {
+    name: 'tr',
+    match(ctx: TokenMatchContext): boolean | TokenMatchResult {
+      const token = ctx.tokens[ctx.index]
+      if (token.type === 'tr_open') {
+        const closeIdx = findCloseIndex(ctx.tokens, ctx.index, 'tr_open', 'tr_close')
+        return { consumed: closeIdx - ctx.index + 1 }
+      }
+      return false
+    },
+    build(ctx: TokenBuildContext): Omit<StatefulToken, 'id' | 'state'> {
+      const consumed = ctx.matchResult.consumed
+      const innerTokens = ctx.tokens.slice(ctx.index + 1, ctx.index + consumed - 1)
+      return {
+        type: 'tr',
+        children: ctx.buildChildren(innerTokens, [...ctx.path, 'tr']),
+      }
+    },
+  },
+
+  // th
+  {
+    name: 'th',
+    match(ctx: TokenMatchContext): boolean | TokenMatchResult {
+      const token = ctx.tokens[ctx.index]
+      if (token.type === 'th_open') {
+        const closeIdx = findCloseIndex(ctx.tokens, ctx.index, 'th_open', 'th_close')
+        return { consumed: closeIdx - ctx.index + 1 }
+      }
+      return false
+    },
+    build(ctx: TokenBuildContext): Omit<StatefulToken, 'id' | 'state'> {
+      const openToken = ctx.tokens[ctx.index]
+      const consumed = ctx.matchResult.consumed
+      const innerTokens = ctx.tokens.slice(ctx.index + 1, ctx.index + consumed - 1)
+      const style = openToken.attrs?.style as string | undefined
+      const align = style ? style.replace('text-align:', '').trim() : undefined
+      return {
+        type: 'th',
+        children: ctx.buildChildren(innerTokens, [...ctx.path, 'th']),
+        meta: align ? { align } : undefined,
+      }
+    },
+  },
+
+  // td
+  {
+    name: 'td',
+    match(ctx: TokenMatchContext): boolean | TokenMatchResult {
+      const token = ctx.tokens[ctx.index]
+      if (token.type === 'td_open') {
+        const closeIdx = findCloseIndex(ctx.tokens, ctx.index, 'td_open', 'td_close')
+        return { consumed: closeIdx - ctx.index + 1 }
+      }
+      return false
+    },
+    build(ctx: TokenBuildContext): Omit<StatefulToken, 'id' | 'state'> {
+      const openToken = ctx.tokens[ctx.index]
+      const consumed = ctx.matchResult.consumed
+      const innerTokens = ctx.tokens.slice(ctx.index + 1, ctx.index + consumed - 1)
+      const style = openToken.attrs?.style as string | undefined
+      const align = style ? style.replace('text-align:', '').trim() : undefined
+      return {
+        type: 'td',
+        children: ctx.buildChildren(innerTokens, [...ctx.path, 'td']),
+        meta: align ? { align } : undefined,
+      }
+    },
+  },
 ]
 
 export class TokenRegistry {

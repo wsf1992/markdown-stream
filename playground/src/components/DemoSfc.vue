@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { ref, nextTick } from 'vue'
+import { nextTick, ref } from 'vue'
 import { MarkdownWithTokens } from '../tokens'
+import type { TokenComponentsOptions } from '../tokens'
 import { chat, type Message } from '../services/api'
-
-
 
 interface ChatMessage {
   id: number
@@ -29,6 +28,8 @@ const messages = ref<ChatMessage[]>([
 const inputMessage = ref('')
 const isLoading = ref(false)
 const messagesContainer = ref<HTMLElement | null>(null)
+
+const sfcCardProps: TokenComponentsOptions['sfcCardProps'] = {}
 
 function scrollToBottom() {
   if (messagesContainer.value) {
@@ -171,11 +172,13 @@ function handleKeydown(e: KeyboardEvent) {
               v-else-if="msg.stream && msg.isStreaming"
               :content="msg.stream"
               :debug="true"
+              :sfc-card-props="sfcCardProps"
             />
             <MarkdownWithTokens
               v-else-if="msg.content"
               :content="msg.content"
               :debug="true"
+              :sfc-card-props="sfcCardProps"
             />
           </template>
         </div>

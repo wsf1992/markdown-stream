@@ -46,7 +46,7 @@ export class StreamSession {
   parse(markdown: string): StatefulToken[] {
     const rawTokens = this.adapter.parse(markdown)
     const nextTokens = this.assembler.assemble(rawTokens)
-    const result = diffTokens([], nextTokens, true)
+    const result = diffTokens(this.prevTokens, nextTokens, true)
 
     // Update internal state
     this.buffer = markdown
@@ -98,7 +98,6 @@ export class StreamSession {
     return next.map((t) => {
       const diffToken = diffById.get(t.id)
       if (diffToken) return diffToken
-      // Not in diff - use prev state if exists
       const prevToken = prevById.get(t.id)
       if (prevToken) return prevToken
       return { ...t, state: 'done' as const }
@@ -120,12 +119,16 @@ export class StreamSession {
       currentById.set(t.id, t)
     }
 
-    // Build snapshot from next tokens, applying diff states where available
+    // Build snapshot from next tokens, applying diff states where available.
+    // Reuse existing token objects when possible to preserve stable references
+    // for downstream consumers (e.g. Vue props comparison).
     return next.map((t) => {
       const diffToken = diffById.get(t.id)
       if (diffToken) return diffToken
       const currentToken = currentById.get(t.id)
-      if (currentToken) return currentToken
+      if (currentToken) {
+        return currentToken
+      }
       return { ...t, state: 'done' as const }
     })
   }

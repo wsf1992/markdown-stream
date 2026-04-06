@@ -220,6 +220,45 @@
   color: var(--ms-link-hover-color);
 }
 
+/* ─── 表格 ───────────────────────────────────────────────── */
+.ms-root {
+  --ms-table-border: #d0d7de;
+  --ms-table-header-bg: #f6f8fa;
+  --ms-table-row-alt-bg: #f6f8fa;
+}
+
+@media (prefers-color-scheme: dark) {
+  .ms-root {
+    --ms-table-border: #30363d;
+    --ms-table-header-bg: #161b22;
+    --ms-table-row-alt-bg: #161b22;
+  }
+}
+
+.ms-root .ms-token-table {
+  margin-top: 0;
+  margin-bottom: var(--ms-spacing);
+  border-collapse: collapse;
+  width: 100%;
+  display: block;
+  overflow-x: auto;
+}
+
+.ms-root .ms-token-th,
+.ms-root .ms-token-td {
+  padding: 0.375em 0.75em;
+  border: 1px solid var(--ms-table-border);
+}
+
+.ms-root .ms-token-thead .ms-token-th {
+  font-weight: 600;
+  background-color: var(--ms-table-header-bg);
+}
+
+.ms-root .ms-token-tbody .ms-token-tr:nth-child(even) .ms-token-td {
+  background-color: var(--ms-table-row-alt-bg);
+}
+
 /* ─── 流式光标动画 ───────────────────────────────────────── */
 
 /**

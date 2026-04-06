@@ -47,7 +47,7 @@ export default defineComponent({
       ? extractTokenTypes(props.components)
       : []
 
-    const { tokens, isStreaming, consume, parse, reset } = useMarkdownStream({
+    const { tokens, isStreaming, consume, parse, reset, cancel } = useMarkdownStream({
       tokenTypes: [...(props.tokenTypes ?? []), ...autoTokenTypes],
       debug: props.debug,
     })
@@ -74,9 +74,20 @@ export default defineComponent({
     // Priority: content > source > stream
     watch(
       [() => props.content, () => props.source, () => props.stream],
-      ([content, source, stream]) => {
+      ([content, source, stream], prevVals) => {
         const value = content ?? source ?? stream
         if (value === undefined) return
+
+        // Streaming → Static transition: cancel async loop, then parse final text.
+        const prevValue = prevVals ? (prevVals[0] ?? prevVals[1] ?? prevVals[2]) : undefined
+        const wasStreaming = prevValue != null && typeof prevValue !== 'string'
+        if (wasStreaming && typeof value === 'string') {
+          cancel()
+          isStreaming.value = false
+          parse(value)
+          return
+        }
+
         reset()
         if (typeof value === 'string') {
           parse(value)

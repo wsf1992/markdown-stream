@@ -8,8 +8,8 @@
     "build": "vite build"
   },
   "dependencies": {
-    "@markdown-stream/core": "^0.1.3",
-    "@markdown-stream/vue3": "^0.1.13",
+    "@markdown-stream/core": "file:../core",
+    "@markdown-stream/vue3": "file:../vue3",
     "vue": "^3.3.0"
   },
   "devDependencies": {

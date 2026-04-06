@@ -105,6 +105,7 @@ describe('components 数组格式', () => {
     expect(wrapper.find('.tip').exists()).toBe(true)
     expect(wrapper.find('.warn').exists()).toBe(true)
   })
+
 })
 
 describe('state 专属渲染组件', () => {

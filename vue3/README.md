@@ -65,17 +65,12 @@ async function* aiStream() {
 ```ts
 interface CustomTokenDefinition {
   name: string              // token 类型名
-  component?: Component     // 所有 state 的兜底渲染组件
-  start?: Component         // 仅 state === 'start' 时渲染
-  streaming?: Component     // 仅 state === 'streaming' 时渲染
-  done?: Component          // 仅 state === 'done' 时渲染
+  component?: Component     // 渲染组件，token.state 在组件内部自行处理
   openRegex?: string | RegExp   // 有此字段时自动注册解析规则
   closeRegex?: string | RegExp  // 配合 openRegex 匹配 open/close token 对
   contentRegex?: RegExp         // 匹配行内文本片段，捕获组内容作为 token.content 传入组件
 }
 ```
-
-**State 渲染规则：** 专属组件（`start / streaming / done`）优先于 `component` 兜底；某 state 未定义且无兜底时，该 state 下不渲染任何内容。
 
 ### 覆盖已有 token 的渲染
 
@@ -183,26 +178,6 @@ const imgUrl = computed(() => {
     :content="markdown"
     :components="[
       { name: 'json', openRegex: /^json$/, component: JsonBlock },
-    ]"
-  />
-</template>
-```
-
-### 按 state 分别渲染不同组件
-
-流式场景下为不同阶段提供独立组件：
-
-```vue
-<template>
-  <MarkdownStream
-    :content="aiStream()"
-    :components="[
-      {
-        name:      'fence',
-        start:     CodeSkeleton,   // 骨架屏
-        streaming: CodeStreaming,  // 打字动效
-        done:      CodeBlock,      // 最终高亮版本
-      },
     ]"
   />
 </template>
@@ -326,26 +301,22 @@ defineProps<{ token: StatefulToken }>()
 
 ### SfcRendererPending
 
-Vue SFC 生成过程中的骨架屏占位组件，用于 `fence` token 的 `start` / `streaming` 阶段。
+Vue SFC 生成过程中的骨架屏占位组件，用于 `fence` token 的 `streaming` 阶段。
 
-显示一张带波浪动画的卡片，包含头像、标题行、副标题行及横幅区块，视觉上模拟「内容即将出现」的加载状态。
+显示一张带波浪动画的卡片，包含头像、标题行、副标题行及横幅区块，视觉上模拟「内容即将出现」的加载状态。可在自定义组件内部根据 `token.state` 决定是否展示。
 
 ```vue
 <script setup lang="ts">
-import { MarkdownStream, SfcRendererPending } from '@markdown-stream/vue3'
+import type { StatefulToken } from '@markdown-stream/core'
+import { SfcRendererPending } from '@markdown-stream/vue3'
+
+defineProps<{ token: StatefulToken }>()
 </script>
 
 <template>
-  <MarkdownStream
-    :content="aiStream()"
-    :components="[
-      {
-        name:      'fence',
-        start:     SfcRendererPending,  // 骨架屏：尚未收到内容
-        streaming: SfcRendererPending,  // 骨架屏：内容流入中
-      },
-    ]"
-  />
+  <!-- streaming 阶段显示骨架屏，done 阶段渲染实际内容 -->
+  <SfcRendererPending v-if="token.state === 'streaming'" />
+  <div v-else>{{ token.content }}</div>
 </template>
 ```
 
@@ -365,25 +336,20 @@ import { MarkdownStream, SfcRendererPending } from '@markdown-stream/vue3'
 
 ```vue
 <script setup lang="ts">
-import { MarkdownStream, SfcRendererPending, VueSfcFenceRenderer } from '@markdown-stream/vue3'
+import { MarkdownStream, VueSfcFenceRenderer } from '@markdown-stream/vue3'
 </script>
 
 <template>
   <MarkdownStream
     :content="aiStream()"
     :components="[
-      {
-        name:      'fence',
-        start:     SfcRendererPending,    // 骨架屏
-        streaming: SfcRendererPending,    // 骨架屏
-        done:      VueSfcFenceRenderer,   // 预览 + 代码双标签
-      },
+      { name: 'fence', component: VueSfcFenceRenderer },
     ]"
   />
 </template>
 ```
 
-> **沙箱依赖**：iframe 内通过 CDN 加载 `vue@3`、`vue3-sfc-loader` 及 `tailwindcss`，需要网络访问权限。sandbox 属性设置为 `allow-scripts allow-same-origin allow-modals allow-popups allow-forms`。
+> **沙箱说明**：`vue@3`、`vue3-sfc-loader` 及 `@tailwindcss/browser` 已内联打包至组件内，无需任何外部网络请求。sandbox 属性设置为 `allow-scripts allow-same-origin allow-modals allow-popups allow-forms`。
 
 ---
 

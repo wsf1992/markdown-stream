@@ -11,6 +11,8 @@ export { buildTokenType, extractTokenTypes, extractComponentMap, makeStateRouter
 
 export type { CustomTokenDefinition, MarkdownTokenComponentMap, TokenComponentProps } from './types/renderer.js'
 export type { MarkdownStreamProps } from './types/props.js'
+export type { VueSfcCardMetrics, VueSfcRenderSuccessPayload } from './types/sfc-renderer.js'
 
 export { default as VueSfcFenceRenderer } from './components/VueSfcFenceRenderer.vue'
+export { default as VueSfcShadowRenderer } from './components/VueSfcShadowRenderer.vue'
 export { default as SfcRendererPending } from './components/SfcRendererPending.vue'

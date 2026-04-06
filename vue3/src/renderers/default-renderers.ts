@@ -201,4 +201,84 @@ export const defaultRenderers: MarkdownTokenComponentMap = {
       return () => h(Fragment, null, renderChildren(props.token))
     },
   }),
+
+  table: defineComponent({
+    props: ['token'],
+    setup(props: { token: StatefulToken }) {
+      return () =>
+        h(
+          'table',
+          { class: 'ms-token-table', ...stateAttrs(props.token) },
+          renderChildren(props.token)
+        )
+    },
+  }),
+
+  thead: defineComponent({
+    props: ['token'],
+    setup(props: { token: StatefulToken }) {
+      return () =>
+        h(
+          'thead',
+          { class: 'ms-token-thead', ...stateAttrs(props.token) },
+          renderChildren(props.token)
+        )
+    },
+  }),
+
+  tbody: defineComponent({
+    props: ['token'],
+    setup(props: { token: StatefulToken }) {
+      return () =>
+        h(
+          'tbody',
+          { class: 'ms-token-tbody', ...stateAttrs(props.token) },
+          renderChildren(props.token)
+        )
+    },
+  }),
+
+  tr: defineComponent({
+    props: ['token'],
+    setup(props: { token: StatefulToken }) {
+      return () =>
+        h(
+          'tr',
+          { class: 'ms-token-tr', ...stateAttrs(props.token) },
+          renderChildren(props.token)
+        )
+    },
+  }),
+
+  th: defineComponent({
+    props: ['token'],
+    setup(props: { token: StatefulToken }) {
+      return () =>
+        h(
+          'th',
+          {
+            class: 'ms-token-th',
+            style: props.token.meta?.align ? { textAlign: props.token.meta.align as string } : undefined,
+            ...stateAttrs(props.token),
+          },
+          renderChildren(props.token)
+        )
+    },
+  }),
+
+  td: defineComponent({
+    props: ['token'],
+    setup(props: { token: StatefulToken }) {
+      return () =>
+        h(
+          'td',
+          {
+            class: 'ms-token-td',
+            style: props.token.meta?.align ? { textAlign: props.token.meta.align as string } : undefined,
+            ...stateAttrs(props.token),
+          },
+          renderChildren(props.token)
+        )
+    },
+  }),
 }
