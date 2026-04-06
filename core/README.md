@@ -126,6 +126,25 @@ interface StatefulToken {
 
 > inline token（`children` 内）不单独携带 state，其状态跟随所在 block。
 
+### 流式计时字段
+
+所有顶层 block token 的 `meta` 中会自动注入以下两个计时字段（由内部 diff 阶段写入，无需手动设置）：
+
+| 字段 | 类型 | 写入时机 |
+|------|------|----------|
+| `streamStartTime` | `number`（毫秒时间戳） | token **首次出现**时记录，后续更新中保持不变 |
+| `streamDoneTime` | `number`（毫秒时间戳） | token **状态变为 `done`** 时记录，streaming 阶段不存在此字段 |
+
+典型用法——计算某个 token 从出现到完成的耗时：
+
+```ts
+const start = token.meta?.streamStartTime as number
+const done = (token.meta?.streamDoneTime as number | undefined) ?? Date.now()
+const elapsed = done - start  // 毫秒
+```
+
+> 这两个字段不参与内容相等性比较，不会因时间戳变化触发多余的 diff 输出。
+
 ## 自定义 token 类型
 
 通过 `defineTokenType` + `use()` 注册自定义 token：
