@@ -45,13 +45,19 @@ function greet(name: string) {
       <button type="button" class="btn" @click="count++">+1</button>
       <span class="value">当前值：<strong>{{ count }}</strong></span>
     </div>
+    <p class="render-time" v-if="renderTime !== null">渲染耗时：{{ renderTime }} ms</p>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 
 const count = ref(0)
+const renderTime = ref(null)
+const _t0 = performance.now()
+onMounted(() => {
+  renderTime.value = (performance.now() - _t0).toFixed(2)
+})
 </script>
 
 <style scoped>
@@ -126,6 +132,12 @@ const count = ref(0)
   color: #0f172a;
   font-size: 1.05em;
 }
+
+.render-time {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
 </style>
 ````
 
@@ -135,50 +147,105 @@ const count = ref(0)
 
 ````ui-shadow
 <template>
-  <div class="card">
-    <h3 class="title">🧮 Shadow DOM 计数器</h3>
-    <p class="desc">样式由 Shadow DOM 隔离，不受宿主页面影响</p>
+  <div class="counter-card">
+    <h3 class="title">计数器</h3>
     <div class="row">
-      <button class="btn dec" @click="count > 0 && count--">−</button>
-      <span class="value">{{ count }}</span>
-      <button class="btn inc" @click="count++">+</button>
+      <button type="button" class="btn" @click="count++">+1</button>
+      <span class="value">当前值：<strong>{{ count }}</strong></span>
     </div>
+    <p class="render-time" v-if="renderTime !== null">渲染耗时：{{ renderTime }} ms</p>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+
 const count = ref(0)
+const renderTime = ref(null)
+const _t0 = performance.now()
+onMounted(() => {
+  renderTime.value = (performance.now() - _t0).toFixed(2)
+})
 </script>
 
 <style scoped>
-.card {
+.counter-card {
   display: flex;
   flex-direction: column;
+  gap: 12px;
+  padding: 20px 22px;
+  max-width: 320px;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #ffffff 0%, #f4f6fb 100%);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.06),
+    0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+.title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #0f172a;
+}
+
+.row {
+  display: flex;
+  align-items: center;
   gap: 14px;
-  padding: 24px 28px;
-  max-width: 360px;
-  border-radius: 16px;
-  background: linear-gradient(145deg, #f0f9ff 0%, #e0f2fe 100%);
-  border: 1px solid #bae6fd;
-  box-shadow: 0 4px 20px rgba(14, 165, 233, 0.12);
-  font-family: system-ui, sans-serif;
+  flex-wrap: wrap;
 }
-.title { margin: 0; font-size: 1.1rem; font-weight: 700; color: #0c4a6e; }
-.desc  { margin: 0; font-size: 0.85rem; color: #0369a1; }
-.row   { display: flex; align-items: center; gap: 20px; }
-.value { font-size: 2rem; font-weight: 800; color: #0c4a6e; min-width: 48px; text-align: center; }
+
 .btn {
-  width: 40px; height: 40px;
-  border: none; border-radius: 50%;
-  font-size: 1.4rem; font-weight: 700;
-  cursor: pointer; transition: transform .15s, filter .15s;
-  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.2) inset,
+    0 2px 6px rgba(37, 99, 235, 0.35);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    filter 0.15s ease;
 }
-.inc { background: #0ea5e9; color: #fff; }
-.dec { background: #e0f2fe; color: #0369a1; }
-.btn:hover  { filter: brightness(1.08); }
-.btn:active { transform: scale(.93); }
+
+.btn:hover {
+  filter: brightness(1.05);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.25) inset,
+    0 4px 14px rgba(37, 99, 235, 0.45);
+}
+
+.btn:active {
+  transform: translateY(1px);
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.08) inset,
+    0 2px 4px rgba(37, 99, 235, 0.3);
+}
+
+.value {
+  font-size: 0.95rem;
+  color: #475569;
+}
+
+.value strong {
+  font-variant-numeric: tabular-nums;
+  color: #0f172a;
+  font-size: 1.05em;
+}
+
+.render-time {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
 </style>
 ````
 

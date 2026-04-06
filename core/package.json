@@ -1,6 +1,6 @@
 {
   "name": "@markdown-stream/core",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "Streaming markdown tokenizer with stateful token tracking",
   "type": "module",
   "main": "dist/index.js",
