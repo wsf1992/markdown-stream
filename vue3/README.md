@@ -353,6 +353,42 @@ import { MarkdownStream, VueSfcFenceRenderer } from '@markdown-stream/vue3'
 
 ---
 
+## 流式计时字段
+
+所有顶层 block token 的 `meta` 中会自动注入以下两个计时字段，由内部 diff 阶段写入，无需手动设置：
+
+| 字段 | 类型 | 写入时机 |
+|------|------|----------|
+| `streamStartTime` | `number`（毫秒时间戳） | token **首次出现**时记录，后续更新中保持不变 |
+| `streamDoneTime` | `number`（毫秒时间戳） | token **状态变为 `done`** 时记录，streaming 阶段不存在此字段 |
+
+典型用法——在自定义组件中计算 token 从出现到完成的耗时：
+
+```vue
+<script setup>
+import { computed } from 'vue'
+
+const props = defineProps(['token'])
+
+const elapsed = computed(() => {
+  const start = props.token.meta?.streamStartTime
+  const done = props.token.meta?.streamDoneTime ?? Date.now()
+  return done - start // 毫秒
+})
+</script>
+
+<template>
+  <div>
+    <slot />
+    <span v-if="token.state === 'done'">生成耗时 {{ elapsed }} ms</span>
+  </div>
+</template>
+```
+
+> 这两个字段不参与内容相等性比较，不会因时间戳变化触发多余的重渲染。
+
+---
+
 ## `useMarkdownStream` 组合式 API
 
 底层组合式函数，适合需要自行控制渲染逻辑的场景。
