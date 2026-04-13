@@ -336,22 +336,11 @@ export class TokenAssembler {
     while (i < tokens.length) {
       const token = tokens[i]
 
-      // Handle inline tokens (with children from markdown-it)
+      // Handle inline tokens (with children from markdown-it) — flatten directly into parent
       if (token.type === 'inline') {
         const inlineChildren = token.children ?? []
-        const inlineStateful = buildInlineChildren(inlineChildren, [
-          ...path,
-          'inline',
-        ], this.registry)
-        // We return an inline wrapper token
-        typeCount['inline'] = (typeCount['inline'] ?? 0) + 1
-        const id = generateId('inline', path, typeCount['inline'] - 1)
-        result.push({
-          id,
-          type: 'inline',
-          state: 'done',
-          children: inlineStateful,
-        })
+        const inlineStateful = buildInlineChildren(inlineChildren, path, this.registry)
+        result.push(...inlineStateful)
         i++
         continue
       }

@@ -1,4 +1,4 @@
-export type { RawToken, StatefulToken, TokenState } from './types/token.js'
+export type { StatefulToken, TokenState } from './types/token.js'
 export type {
   TokenMatchContext,
   TokenMatchResult,
@@ -6,11 +6,6 @@ export type {
   FinalizeContext,
   TokenTypeDefinition,
 } from './core/token-registry.js'
-export { TokenRegistry } from './core/token-registry.js'
-export { TokenAssembler } from './core/token-assembler.js'
-export { diffTokens } from './core/token-diff.js'
-export { StreamSession } from './core/stream-session.js'
-export { MarkdownItAdapter } from './parser/markdown-it-adapter.js'
 
 import type { StatefulToken } from './types/token.js'
 import type { TokenTypeDefinition } from './core/token-registry.js'

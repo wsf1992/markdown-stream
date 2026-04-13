@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { MarkdownItAdapter } from '../src/parser/markdown-it-adapter.js'
 import { TokenAssembler } from '../src/core/token-assembler.js'
+// Note: these tests import directly from internal modules (not index.ts) to stay focused on assembly logic.
 
 function assemble(markdown: string) {
   const adapter = new MarkdownItAdapter()
@@ -19,14 +20,14 @@ describe('TokenAssembler', () => {
       expect(tokens[0].children).toBeDefined()
     })
 
-    it('paragraph children contain inline content', () => {
+    it('paragraph children contain inline content directly (no inline wrapper)', () => {
       const tokens = assemble('Hello world')
       const para = tokens[0]
       expect(para.type).toBe('paragraph')
-      const inline = para.children?.[0]
-      expect(inline?.type).toBe('inline')
-      expect(inline?.children?.[0]?.type).toBe('text')
-      expect(inline?.children?.[0]?.content).toBe('Hello world')
+      // inline children are flattened directly into paragraph.children
+      const text = para.children?.[0]
+      expect(text?.type).toBe('text')
+      expect(text?.content).toBe('Hello world')
     })
 
     it('multiple paragraphs get separate ids', () => {
@@ -59,12 +60,13 @@ describe('TokenAssembler', () => {
       }
     })
 
-    it('heading has inline children', () => {
+    it('heading has inline children directly (no inline wrapper)', () => {
       const tokens = assemble('# My Title')
       const heading = tokens[0]
       expect(heading.children).toBeDefined()
-      const inline = heading.children?.[0]
-      expect(inline?.type).toBe('inline')
+      // inline children are flattened directly, no intermediate 'inline' wrapper
+      const text = heading.children?.[0]
+      expect(text?.type).toBe('text')
     })
   })
 
@@ -136,32 +138,29 @@ describe('TokenAssembler', () => {
     it('parses strong (bold)', () => {
       const tokens = assemble('**bold text**')
       const para = tokens[0]
-      const inline = para.children?.[0]
-      const strong = inline?.children?.find((c) => c.type === 'strong')
+      // inline children are directly in para.children (no wrapper)
+      const strong = para.children?.find((c) => c.type === 'strong')
       expect(strong).toBeDefined()
     })
 
     it('parses em (italic)', () => {
       const tokens = assemble('*italic text*')
       const para = tokens[0]
-      const inline = para.children?.[0]
-      const em = inline?.children?.find((c) => c.type === 'em')
+      const em = para.children?.find((c) => c.type === 'em')
       expect(em).toBeDefined()
     })
 
     it('parses link', () => {
       const tokens = assemble('[link text](https://example.com)')
       const para = tokens[0]
-      const inline = para.children?.[0]
-      const link = inline?.children?.find((c) => c.type === 'link')
+      const link = para.children?.find((c) => c.type === 'link')
       expect(link).toBeDefined()
     })
 
     it('parses code_inline', () => {
       const tokens = assemble('Use `console.log` for debugging')
       const para = tokens[0]
-      const inline = para.children?.[0]
-      const code = inline?.children?.find((c) => c.type === 'code_inline')
+      const code = para.children?.find((c) => c.type === 'code_inline')
       expect(code).toBeDefined()
       expect(code?.content).toBe('console.log')
     })
@@ -169,10 +168,9 @@ describe('TokenAssembler', () => {
     it('parses mixed inline', () => {
       const tokens = assemble('Text with **bold** and *italic* and `code`')
       const para = tokens[0]
-      const inline = para.children?.[0]
-      expect(inline?.children?.some((c) => c.type === 'strong')).toBe(true)
-      expect(inline?.children?.some((c) => c.type === 'em')).toBe(true)
-      expect(inline?.children?.some((c) => c.type === 'code_inline')).toBe(true)
+      expect(para.children?.some((c) => c.type === 'strong')).toBe(true)
+      expect(para.children?.some((c) => c.type === 'em')).toBe(true)
+      expect(para.children?.some((c) => c.type === 'code_inline')).toBe(true)
     })
   })
 

@@ -22,13 +22,23 @@ function mergeTimingMeta(
 /** diffTokens 自身注入的计时字段，不参与内容相等性判断 */
 const TIMING_META_KEYS: ReadonlySet<string> = new Set(['streamStartTime', 'streamDoneTime'])
 
-function stripTimingMeta(meta: Record<string, unknown> | undefined): Record<string, unknown> | null {
-  if (!meta) return null
-  const result: Record<string, unknown> = {}
-  for (const [k, v] of Object.entries(meta)) {
-    if (!TIMING_META_KEYS.has(k)) result[k] = v
-  }
-  return Object.keys(result).length > 0 ? result : null
+function metaContentEqual(
+  a: Record<string, unknown> | undefined,
+  b: Record<string, unknown> | undefined,
+): boolean {
+  if (a === b) return true
+  const aKeys = a ? Object.keys(a).filter((k) => !TIMING_META_KEYS.has(k)) : []
+  const bKeys = b ? Object.keys(b).filter((k) => !TIMING_META_KEYS.has(k)) : []
+  if (aKeys.length !== bKeys.length) return false
+  return aKeys.every((k) => {
+    const av = a![k]
+    const bv = b?.[k]
+    if (av === bv) return true
+    if (typeof av === 'object' && av !== null) {
+      return JSON.stringify(av) === JSON.stringify(bv)
+    }
+    return false
+  })
 }
 
 function tokensContentEqual(a: StatefulToken, b: StatefulToken): boolean {
@@ -36,9 +46,7 @@ function tokensContentEqual(a: StatefulToken, b: StatefulToken): boolean {
   if (a.type !== b.type) return false
 
   // Compare meta，排除计时字段（计时字段只存在于 prevToken，nextToken 由 assembler 生成时没有）
-  const aMeta = JSON.stringify(stripTimingMeta(a.meta))
-  const bMeta = JSON.stringify(stripTimingMeta(b.meta))
-  if (aMeta !== bMeta) return false
+  if (!metaContentEqual(a.meta, b.meta)) return false
 
   // Compare children
   if ((a.children == null) !== (b.children == null)) return false
@@ -104,12 +112,9 @@ export function diffTokens(
 
     if (!prevToken) {
       // New token:
-      // - If last token in the list: 'streaming' (still potentially receiving content)
+      // - If last token in the list: 'start' (just appeared, content may still arrive)
       // - If not last (other blocks follow): 'done' (the block is complete)
-      // - Special case: if it's the only new token and is last, use 'start' only
-      //   when transitioning from prev known state to indicate it just appeared.
-      //   But per spec, non-last block → 'done', last block → 'streaming'
-      const state = isLast ? 'streaming' : 'done'
+      const state = isLast ? 'start' : 'done'
       result.push({
         ...nextToken,
         meta: mergeTimingMeta(nextToken.meta, undefined, true, state === 'done'),

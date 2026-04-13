@@ -43,11 +43,11 @@ describe('StreamSession via MarkdownProcessor', () => {
       // At least one token should be returned
     })
 
-    it('write a simple paragraph returns streaming state for last token', () => {
+    it('write a simple paragraph returns start state for last token on first write', () => {
       const diff = processor.write('Hello world')
       expect(diff.length).toBe(1)
       expect(diff[0].type).toBe('paragraph')
-      expect(diff[0].state).toBe('streaming')
+      expect(diff[0].state).toBe('start')
     })
 
     it('continuing write returns streaming for last token', () => {
@@ -86,11 +86,16 @@ describe('StreamSession via MarkdownProcessor', () => {
       expect(id1).toBe(id2)
     })
 
-    it('last block is streaming', () => {
+    it('last block is start on first write, streaming after content changes', () => {
       processor.write('# Title\n\nSome paragraph text')
       const snapshot = processor.snapshot()
       const lastToken = snapshot[snapshot.length - 1]
-      expect(lastToken?.state).toBe('streaming')
+      expect(lastToken?.state).toBe('start')
+
+      processor.write(' more')
+      const snapshot2 = processor.snapshot()
+      const lastToken2 = snapshot2[snapshot2.length - 1]
+      expect(lastToken2?.state).toBe('streaming')
     })
 
     it('non-last blocks are done', () => {

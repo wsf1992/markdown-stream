@@ -22,8 +22,13 @@ export class StreamSession {
 
   use(def: TokenTypeDefinition): this {
     this.registry.register(def)
-    // Rebuild assembler with updated registry
     this.assembler = new TokenAssembler(this.registry)
+    // Re-parse existing buffer so prevTokens reflects the new registry,
+    // preventing spurious diff results on the next write().
+    if (this.buffer) {
+      const rawTokens = this.adapter.parse(this.buffer)
+      this.prevTokens = this.assembler.assemble(rawTokens)
+    }
     return this
   }
 
