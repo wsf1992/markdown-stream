@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "paths": {
+      "@markdown-stream/core": ["../core/dist/index.d.ts"]
+    }
+  },
+  "include": ["src"],
+  "exclude": ["tests", "node_modules", "dist"]
+}

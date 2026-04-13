@@ -1,0 +1,259 @@
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 15px;
+  background: #f5f5f5;
+  color: #1a1a1a;
+}
+
+h1, h2, h3 { margin: 0 0 12px; }
+
+nav {
+  display: flex;
+  gap: 8px;
+  padding: 16px 24px;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+nav button {
+  padding: 6px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.15s;
+}
+
+nav button:hover { background: #f9fafb; }
+
+nav button.active {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: #fff;
+}
+
+.page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* ── 渲染输出区域 ── */
+.ms-root { line-height: 1.75; }
+
+.ms-root h1, .ms-root h2, .ms-root h3,
+.ms-root h4, .ms-root h5, .ms-root h6 {
+  margin: 1em 0 0.4em;
+}
+.ms-root p  { margin: 0 0 0.8em; }
+.ms-root ul, .ms-root ol { margin: 0 0 0.8em; padding-left: 1.5em; }
+.ms-root li { margin-bottom: 2px; }
+.ms-root blockquote {
+  margin: 0 0 0.8em;
+  padding: 8px 16px;
+  border-left: 4px solid #d1d5db;
+  color: #6b7280;
+}
+.ms-root pre {
+  margin: 0 0 0.8em;
+  padding: 14px 16px;
+  background: #1e1e2e;
+  color: #cdd6f4;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.ms-root code { font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+.ms-root a { color: #3b82f6; }
+.ms-root strong { font-weight: 600; }
+
+/* streaming 状态：光标动画 */
+[data-state="streaming"] { opacity: 0.85; }
+[data-state="streaming"]:last-child::after {
+  content: '▌';
+  animation: blink 0.7s step-end infinite;
+  color: #3b82f6;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ── 自定义 token 样式 ── */
+.callout {
+  margin: 0 0 0.8em;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid;
+}
+.callout-info    { background: #eff6ff; border-color: #bfdbfe; }
+.callout-warning { background: #fffbeb; border-color: #fde68a; }
+.callout-danger  { background: #fef2f2; border-color: #fecaca; }
+.callout .label  { font-weight: 600; font-size: 13px; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+/* skeleton */
+.skeleton {
+  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
+  border-radius: 6px;
+  height: 80px;
+  margin-bottom: 0.8em;
+}
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+/* ── 控制面板 ── */
+.controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.controls label { font-size: 13px; color: #6b7280; display: flex; align-items: center; gap: 6px; }
+.controls input[type=range] { width: 120px; }
+
+.panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 640px) { .panel { grid-template-columns: 1fr; } }
+
+.box {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 16px;
+}
+.box h3 { font-size: 13px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
+
+textarea {
+  width: 100%;
+  min-height: 180px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 10px;
+  font-family: monospace;
+  font-size: 13px;
+  resize: vertical;
+  outline: none;
+}
+textarea:focus { border-color: #3b82f6; }
+
+button.run {
+  padding: 7px 18px;
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.15s;
+}
+button.run:hover { background: #2563eb; }
+button.run:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.tag { font-size: 11px; padding: 2px 7px; border-radius: 4px; font-weight: 500; }
+.tag-streaming { background: #dbeafe; color: #1d4ed8; }
+.tag-done      { background: #dcfce7; color: #15803d; }
+
+/* ── CodeBlock ── */
+.code-block {
+  background: #1e1e1e;
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 12px 0;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  border: 1px solid #3d3d3d;
+}
+.code-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #2d2d2d;
+  border-bottom: 1px solid #3d3d3d;
+}
+.mac-dots { display: flex; gap: 6px; }
+.dot { width: 12px; height: 12px; border-radius: 50%; }
+.dot-red    { background: #ff5f56; }
+.dot-yellow { background: #ffbd2e; }
+.dot-green  { background: #27c93f; }
+.code-lang {
+  font-size: 12px;
+  color: #888;
+  font-family: system-ui, -apple-system, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.code-content {
+  margin: 0;
+  padding: 16px;
+  overflow-x: auto;
+  background: #1e1e1e;
+}
+.code-content code {
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 13px;
+  color: #d4d4d4;
+  white-space: pre;
+  line-height: 1.6;
+}
+
+/* ── JsonBlock ── */
+.json-block {
+  position: relative;
+  background: #1e293b;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 12px 0;
+}
+.json-image { padding: 12px; background: #fff; display: flex; justify-content: center; }
+.json-image img { max-width: 100%; max-height: 200px; border-radius: 4px; object-fit: contain; }
+.json-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: #0f172a;
+  border-bottom: 1px solid #334155;
+}
+.json-badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: #a5b4fc;
+  background: #4f46e5;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+.json-copy-btn {
+  font-size: 12px;
+  color: #94a3b8;
+  background: transparent;
+  border: 1px solid #475569;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.json-copy-btn:hover { color: #fff; background: #475569; }
+.json-content { padding: 16px; margin: 0; overflow-x: auto; color: #e2e8f0; font-size: 13px; line-height: 1.5; }
+.json-content code { font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace; }
+.json-error  { padding: 16px; margin: 0; color: #f87171; font-size: 13px; }
+.json-loading { padding: 20px; display: flex; justify-content: center; }
+.dots { display: flex; gap: 4px; }
+.dots span {
+  width: 8px; height: 8px;
+  background: #64748b;
+  border-radius: 50%;
+  animation: bounce 0.6s infinite alternate;
+}
+.dots span:nth-child(2) { animation-delay: 0.15s; }
+.dots span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes bounce { to { transform: translateY(-6px); } }
