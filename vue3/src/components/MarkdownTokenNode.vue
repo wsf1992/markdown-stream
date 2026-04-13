@@ -1,6 +1,6 @@
 <script lang="ts">
-import { defineComponent, h, inject, markRaw } from 'vue'
-import type { VNode } from 'vue'
+import { defineComponent, h, inject } from 'vue'
+import type { VNode, ComputedRef } from 'vue'
 import type { StatefulToken } from '@markdown-stream/core'
 import { defaultRenderers, registerMarkdownTokenNode } from '../renderers/default-renderers.js'
 import type { MarkdownTokenComponentMap } from '../types/renderer.js'
@@ -16,17 +16,16 @@ const MarkdownTokenNode = defineComponent({
     },
   },
   setup(props): () => VNode | VNode[] | string | null {
-    const customComponents = inject<Partial<MarkdownTokenComponentMap>>(
-      COMPONENTS_INJECT_KEY,
-      {}
+    const customComponents = inject<ComputedRef<Partial<MarkdownTokenComponentMap>>>(
+      COMPONENTS_INJECT_KEY
     )
 
     return (): VNode | VNode[] | string | null => {
       const { token } = props
-      const raw =
-        (customComponents && customComponents[token.type]) ??
+      const map = customComponents?.value
+      const comp =
+        (map && map[token.type]) ??
         defaultRenderers[token.type]
-      const comp = raw ? markRaw(raw) : undefined
 
       if (!comp) {
         if (token.children?.length) {

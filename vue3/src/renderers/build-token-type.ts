@@ -9,8 +9,10 @@ function safeComp(c: Component | undefined): Component | undefined {
   return c ? markRaw(toRaw(c) as object as Component) : undefined
 }
 
+const HANDLER_KEY_RE = /(^|[-_:])(\w)/g
+
 function toHandlerKey(eventName: string): string {
-  const normalized = eventName.replace(/(^|[-_:])(\w)/g, (_match, _prefix, ch: string) => ch.toUpperCase())
+  const normalized = eventName.replace(HANDLER_KEY_RE, (_match, _prefix, ch: string) => ch.toUpperCase())
   return `on${normalized}`
 }
 

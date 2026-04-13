@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent, h, provide, watch, markRaw, toRaw } from 'vue'
+import { defineComponent, h, provide, watch, markRaw, toRaw, computed } from 'vue'
 import type { PropType } from 'vue'
 import type { TokenTypeDefinition } from '@markdown-stream/core'
 import { useMarkdownStream } from '../composables/use-markdown-stream.js'
@@ -69,9 +69,11 @@ export default defineComponent({
       return safe
     }
 
-    provide(COMPONENTS_INJECT_KEY, buildComponentMap())
+    provide(COMPONENTS_INJECT_KEY, computed(() => buildComponentMap()))
 
     // Priority: content > source > stream
+    // Note: Vue automatically stops this watcher on unmount.
+    // The async consume loop is cancelled via useMarkdownStream's onUnmounted hook.
     watch(
       [() => props.content, () => props.source, () => props.stream],
       ([content, source, stream], prevVals) => {

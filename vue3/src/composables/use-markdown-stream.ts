@@ -41,6 +41,10 @@ export function useMarkdownStream(
   const prevStateMap = new Map<string, string>()
 
   function logTokenChanges(next: StatefulToken[]): void {
+    const nextIds = new Set(next.map((t) => t.id))
+    for (const id of prevStateMap.keys()) {
+      if (!nextIds.has(id)) prevStateMap.delete(id)
+    }
     for (const token of next) {
       const prev = prevStateMap.get(token.id)
       if (prev !== token.state) {
