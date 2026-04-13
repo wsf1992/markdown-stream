@@ -10,6 +10,7 @@ import VueSfcShadowRendererWrapper from '../components/VueSfcShadowRendererWrapp
 import CalloutBlock from '../components/CalloutBlock.vue'
 import ImageToken from '../components/ImageToken.vue'
 import LinkToken from '../components/LinkToken.vue'
+import CitationLink from '../components/CitationLink.vue'
 
 export interface TokenComponentsOptions {
   onSfcError?: (err: Error) => void
@@ -48,6 +49,7 @@ export function createTokenComponents(options: TokenComponentsOptions = {}) {
     { name: 'pink_highlight', contentRegex: /^pink(.+)pink$/, component: PinkHighlight },
     { name: 'image',          contentRegex: /^image(.+)image$/, component: ImageToken },
     { name: 'ext_link',       contentRegex: /^link(.+)link$/, component: LinkToken },
+    { name: 'link',           component: CitationLink },
   ]
 }
 

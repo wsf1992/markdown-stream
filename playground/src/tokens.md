@@ -1,5 +1,8 @@
 # 自定义 Token 演示
 
+## 内置
+张三本月消费金额为 12800 元 [1](citation://call_abc?fields=客户|金额&values=张三|12800)， 李四消费金额为 8500 元 [2](citation://call_abc?fields=客户|金额&values=李四|8500)
+
 ## 内联高亮
 
 这是一段 **粗体加粗** 文字，用于强调重要信息。

@@ -6,9 +6,6 @@ const props = defineProps<{
   token: StatefulToken
 }>()
 
-// 粉色高亮组件（用于警告/注意）
-// contentRegex 模式下，token.content 是提取后的内容
-const text = props.token.content ?? ''
 </script>
 
 <template>
@@ -21,6 +18,6 @@ const text = props.token.content ?? ''
       fontWeight: '500',
     }"
   >
-    {{ text }}
+    {{ props.token.content  }}
   </span>
 </template>
