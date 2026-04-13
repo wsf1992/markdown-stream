@@ -1,0 +1,17 @@
+{
+  "name": "markdown-stream",
+  "private": true,
+  "workspaces": [
+    "core",
+    "vue3",
+    "react",
+    "playground",
+    "playground-react"
+  ],
+  "scripts": {
+    "build": "npm run build -w @markdown-stream/core -w @markdown-stream/vue3 -w @markdown-stream/react",
+    "test": "npm test -w @markdown-stream/core -w @markdown-stream/vue3 -w @markdown-stream/react",
+    "dev:vue": "npm run dev -w markdown-stream-playground",
+    "dev:react": "npm run dev -w markdown-stream-playground-react"
+  }
+}

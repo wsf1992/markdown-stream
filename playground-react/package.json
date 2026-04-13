@@ -8,8 +8,8 @@
     "build": "vite build"
   },
   "dependencies": {
-    "@markdown-stream/core": "file:../core",
-    "@markdown-stream/react": "file:../react",
+    "@markdown-stream/core": "*",
+    "@markdown-stream/react": "*",
     "react": "^18.0.0",
     "react-dom": "^18.0.0"
   },
