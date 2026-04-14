@@ -1,0 +1,28 @@
+{
+  "name": "markdown-stream-playground-all",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@markdown-stream/core": "*",
+    "@markdown-stream/vue3": "*",
+    "@markdown-stream/react": "*",
+    "@markdown-stream/vue2": "file:../vue2",
+    "vue": "^3.3.0",
+    "vue2": "npm:vue@^2.7.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "@vitejs/plugin-react": "^4.0.0",
+    "@vitejs/plugin-vue": "^5.0.0",
+    "@vitejs/plugin-vue2": "^2.3.0",
+    "vite": "^5.0.0"
+  }
+}

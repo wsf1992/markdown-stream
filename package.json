@@ -6,12 +6,14 @@
     "vue3",
     "react",
     "playground",
-    "playground-react"
+    "playground-react",
+    "playground-all"
   ],
   "scripts": {
     "build": "npm run build -w @markdown-stream/core -w @markdown-stream/vue3 -w @markdown-stream/react",
     "test": "npm test -w @markdown-stream/core -w @markdown-stream/vue3 -w @markdown-stream/react",
     "dev:vue": "npm run dev -w markdown-stream-playground",
-    "dev:react": "npm run dev -w markdown-stream-playground-react"
+    "dev:react": "npm run dev -w markdown-stream-playground-react",
+    "dev:all": "npm run dev -w markdown-stream-playground-all"
   }
 }
