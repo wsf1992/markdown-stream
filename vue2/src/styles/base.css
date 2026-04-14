@@ -1,0 +1,289 @@
+/**
+ * @markdown-stream/vue3 — 基础组件样式
+ *
+ * 所有规则均限定在 .ms-root 作用域内，不会污染全局。
+ * 通过 CSS 自定义属性可对主题进行覆盖，支持亮色 / 暗色模式。
+ */
+
+/* ─── 主题变量 ──────────────────────────────────────────── */
+.ms-root {
+  --ms-font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --ms-mono-font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    'Liberation Mono', 'Courier New', monospace;
+  --ms-font-size: 1rem;
+  --ms-line-height: 1.75;
+  --ms-color: inherit;
+  --ms-spacing: 1em;
+
+  /* 代码块 */
+  --ms-code-bg: #f6f8fa;
+  --ms-code-color: #24292e;
+  --ms-code-border: #e1e4e8;
+  --ms-code-inline-bg: rgba(175, 184, 193, 0.2);
+  --ms-code-inline-color: inherit;
+
+  /* 引用块 */
+  --ms-blockquote-border: #d0d7de;
+  --ms-blockquote-color: #57606a;
+
+  /* 链接 */
+  --ms-link-color: #0969da;
+  --ms-link-hover-color: #0550ae;
+
+  /* 标题 */
+  --ms-heading-color: inherit;
+  --ms-heading-border: #d0d7de;
+
+  /* 流式光标动画 */
+  --ms-cursor-color: currentColor;
+  --ms-cursor-width: 2px;
+  --ms-cursor-height: 1.1em;
+}
+
+/* 暗色模式自动适配 */
+@media (prefers-color-scheme: dark) {
+  .ms-root {
+    --ms-code-bg: #161b22;
+    --ms-code-color: #c9d1d9;
+    --ms-code-border: #30363d;
+    --ms-code-inline-bg: rgba(110, 118, 129, 0.4);
+    --ms-blockquote-border: #3d444d;
+    --ms-blockquote-color: #848d97;
+    --ms-link-color: #58a6ff;
+    --ms-link-hover-color: #79c0ff;
+    --ms-heading-border: #21262d;
+  }
+}
+
+/* ─── 根容器 ────────────────────────────────────────────── */
+.ms-root {
+  font-family: var(--ms-font-family);
+  font-size: var(--ms-font-size);
+  line-height: var(--ms-line-height);
+  color: var(--ms-color);
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* ─── 段落 ──────────────────────────────────────────────── */
+.ms-root .ms-token-paragraph {
+  margin-top: 0;
+  margin-bottom: var(--ms-spacing);
+}
+
+.ms-root .ms-token-paragraph:last-child {
+  margin-bottom: 0;
+}
+
+/* ─── 标题 ──────────────────────────────────────────────── */
+.ms-root .ms-token-heading {
+  margin-top: calc(var(--ms-spacing) * 1.5);
+  margin-bottom: calc(var(--ms-spacing) * 0.5);
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--ms-heading-color);
+}
+
+.ms-root .ms-token-heading:first-child {
+  margin-top: 0;
+}
+
+.ms-root .ms-token-heading-1 {
+  font-size: 2em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--ms-heading-border);
+}
+
+.ms-root .ms-token-heading-2 {
+  font-size: 1.5em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--ms-heading-border);
+}
+
+.ms-root .ms-token-heading-3 {
+  font-size: 1.25em;
+}
+
+.ms-root .ms-token-heading-4 {
+  font-size: 1em;
+}
+
+.ms-root .ms-token-heading-5 {
+  font-size: 0.875em;
+}
+
+.ms-root .ms-token-heading-6 {
+  font-size: 0.85em;
+  color: var(--ms-blockquote-color);
+}
+
+/* ─── 代码块（fence）────────────────────────────────────── */
+.ms-root .ms-token-fence {
+  margin-top: 0;
+  margin-bottom: var(--ms-spacing);
+  padding: 1em 1.25em;
+  background-color: var(--ms-code-bg);
+  border: 1px solid var(--ms-code-border);
+  border-radius: 6px;
+  overflow-x: auto;
+}
+
+.ms-root .ms-token-fence code {
+  font-family: var(--ms-mono-font-family);
+  font-size: 0.875em;
+  color: var(--ms-code-color);
+  background: none;
+  padding: 0;
+  border-radius: 0;
+  white-space: pre;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+
+/* ─── 行内代码 ───────────────────────────────────────────── */
+.ms-root .ms-token-code-inline {
+  font-family: var(--ms-mono-font-family);
+  font-size: 0.875em;
+  padding: 0.2em 0.4em;
+  background-color: var(--ms-code-inline-bg);
+  color: var(--ms-code-inline-color);
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+/* ─── 引用块 ─────────────────────────────────────────────── */
+.ms-root .ms-token-blockquote {
+  margin-top: 0;
+  margin-bottom: var(--ms-spacing);
+  padding: 0 1em;
+  color: var(--ms-blockquote-color);
+  border-left: 4px solid var(--ms-blockquote-border);
+}
+
+.ms-root .ms-token-blockquote > :first-child {
+  margin-top: 0;
+}
+
+.ms-root .ms-token-blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+/* ─── 列表 ───────────────────────────────────────────────── */
+.ms-root .ms-token-bullet-list,
+.ms-root .ms-token-ordered-list {
+  margin-top: 0;
+  margin-bottom: var(--ms-spacing);
+  padding-left: 2em;
+}
+
+.ms-root .ms-token-bullet-list {
+  list-style-type: disc;
+}
+
+.ms-root .ms-token-ordered-list {
+  list-style-type: decimal;
+}
+
+/* 嵌套列表收紧间距 */
+.ms-root .ms-token-list-item .ms-token-bullet-list,
+.ms-root .ms-token-list-item .ms-token-ordered-list {
+  margin-top: 0.25em;
+  margin-bottom: 0;
+}
+
+.ms-root .ms-token-list-item {
+  margin-bottom: 0.25em;
+}
+
+.ms-root .ms-token-list-item > .ms-token-paragraph {
+  margin-bottom: 0.25em;
+}
+
+/* ─── 强调 / 斜体 ────────────────────────────────────────── */
+.ms-root .ms-token-strong {
+  font-weight: 600;
+}
+
+.ms-root .ms-token-em {
+  font-style: italic;
+}
+
+/* ─── 链接 ───────────────────────────────────────────────── */
+.ms-root .ms-token-link {
+  color: var(--ms-link-color);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.ms-root .ms-token-link:hover {
+  color: var(--ms-link-hover-color);
+}
+
+/* ─── 表格 ───────────────────────────────────────────────── */
+.ms-root {
+  --ms-table-border: #d0d7de;
+  --ms-table-header-bg: #f6f8fa;
+  --ms-table-row-alt-bg: #f6f8fa;
+}
+
+@media (prefers-color-scheme: dark) {
+  .ms-root {
+    --ms-table-border: #30363d;
+    --ms-table-header-bg: #161b22;
+    --ms-table-row-alt-bg: #161b22;
+  }
+}
+
+.ms-root .ms-token-table {
+  margin-top: 0;
+  margin-bottom: var(--ms-spacing);
+  border-collapse: collapse;
+  width: 100%;
+  display: block;
+  overflow-x: auto;
+}
+
+.ms-root .ms-token-th,
+.ms-root .ms-token-td {
+  padding: 0.375em 0.75em;
+  border: 1px solid var(--ms-table-border);
+}
+
+.ms-root .ms-token-thead .ms-token-th {
+  font-weight: 600;
+  background-color: var(--ms-table-header-bg);
+}
+
+.ms-root .ms-token-tbody .ms-token-tr:nth-child(even) .ms-token-td {
+  background-color: var(--ms-table-row-alt-bg);
+}
+
+/* ─── 流式光标动画 ───────────────────────────────────────── */
+
+/**
+ * 当 .ms-root 上存在 data-streaming 属性时，
+ * 在最后一个子元素末尾追加一个闪烁光标。
+ * 仅用伪元素实现，无需额外 DOM 节点。
+ */
+@keyframes ms-cursor-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.ms-root[data-streaming]:not([data-no-cursor]) > :last-child::after {
+  content: '';
+  display: inline-block;
+  vertical-align: text-bottom;
+  width: var(--ms-cursor-width);
+  height: var(--ms-cursor-height);
+  background-color: var(--ms-cursor-color);
+  border-radius: 1px;
+  margin-left: 2px;
+  animation: ms-cursor-blink 0.9s ease-in-out infinite;
+}

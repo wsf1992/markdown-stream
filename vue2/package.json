@@ -1,0 +1,50 @@
+{
+  "name": "@markdown-stream/vue2",
+  "version": "0.1.0",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./style.css": "./dist/style.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wsf1992/markdown-stream"
+  },
+  "homepage": "https://github.com/wsf1992/markdown-stream",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "vite build && vue-tsc -p tsconfig.build.json --declaration --emitDeclarationOnly --outDir dist && cp src/styles/base.css dist/style.css",
+    "prepublishOnly": "npm run build",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "peerDependencies": {
+    "vue": "^2.7.0"
+  },
+  "dependencies": {
+    "@markdown-stream/core": "^0.1.0"
+  },
+  "devDependencies": {
+    "@markdown-stream/core": "file:../core",
+    "@vitejs/plugin-vue2": "^2.3.0",
+    "@vue/test-utils": "^1.3.6",
+    "happy-dom": "^13.0.0",
+    "typescript": "^5.0.0",
+    "vite": "^5.0.0",
+    "vite-plugin-css-injected-by-js": "^4.0.1",
+    "vitest": "^1.0.0",
+    "vue": "^2.7.0",
+    "vue-tsc": "^2.0.0"
+  }
+}
