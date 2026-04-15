@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e ' *)",
+      "Bash(node -e \"const m = require\\('/Users/wangshaofeng/components/markdown-stream/playground-all/node_modules/vue2/compiler-sfc'\\); console.log\\(m.version || Object.keys\\(m\\).slice\\(0,5\\)\\)\")",
+      "Bash(cp /Users/wangshaofeng/components/markdown-stream/playground/src/react/tokens.md /Users/wangshaofeng/components/markdown-stream/playground/src/shared/tokens.md)",
+      "Bash(cp /Users/wangshaofeng/components/markdown-stream/playground/src/vue2/tokens.md /Users/wangshaofeng/components/markdown-stream/playground/src/shared/tokens-vue2.md)",
+      "Bash(mkdir -p /Users/wangshaofeng/components/markdown-stream/playground/src/shared)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
+    ]
+  }
+}
