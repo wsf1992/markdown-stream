@@ -5,7 +5,7 @@
 ## 安装
 
 ```bash
-npm install @markdown-stream/vue3 @markdown-stream/core vue
+npm install @markdown-stream/vue3
 ```
 
 引入样式（推荐）：
@@ -113,7 +113,7 @@ interface CustomTokenDefinition {
 
 ```vue
 <script setup lang="ts">
-import type { StatefulToken } from '@markdown-stream/core'
+import type { StatefulToken } from '@markdown-stream/vue3'
 defineProps<{ token: StatefulToken }>()
 </script>
 
@@ -138,7 +138,7 @@ defineProps<{ token: StatefulToken }>()
 ```vue
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { StatefulToken } from '@markdown-stream/core'
+import type { StatefulToken } from '@markdown-stream/vue3'
 
 const props = defineProps<{ token: StatefulToken }>()
 
@@ -215,7 +215,7 @@ const imgUrl = computed(() => {
 ```vue
 <!-- MyHighlight.vue -->
 <script setup lang="ts">
-import type { StatefulToken } from '@markdown-stream/core'
+import type { StatefulToken } from '@markdown-stream/vue3'
 defineProps<{ token: StatefulToken }>()
 </script>
 
@@ -264,7 +264,7 @@ Markdown 原文：
 ```vue
 <!-- PinkHighlight.vue -->
 <script setup lang="ts">
-import type { StatefulToken } from '@markdown-stream/core'
+import type { StatefulToken } from '@markdown-stream/vue3'
 defineProps<{ token: StatefulToken }>()
 </script>
 
@@ -307,7 +307,7 @@ Vue SFC 生成过程中的骨架屏占位组件，用于 `fence` token 的 `stre
 
 ```vue
 <script setup lang="ts">
-import type { StatefulToken } from '@markdown-stream/core'
+import type { StatefulToken } from '@markdown-stream/vue3'
 import { SfcRendererPending } from '@markdown-stream/vue3'
 
 defineProps<{ token: StatefulToken }>()
@@ -411,7 +411,7 @@ const {
 ```vue
 <script setup lang="ts">
 import { useMarkdownStream } from '@markdown-stream/vue3'
-import type { StatefulToken } from '@markdown-stream/core'
+import type { StatefulToken } from '@markdown-stream/vue3'
 
 const { tokens, isStreaming, consume } = useMarkdownStream()
 

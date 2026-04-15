@@ -5,7 +5,7 @@
 ## 安装
 
 ```bash
-npm install @markdown-stream/react @markdown-stream/core react react-dom
+npm install @markdown-stream/react
 ```
 
 引入样式（推荐）：
@@ -118,7 +118,7 @@ export default function App() {
 `WarningBlock` 通过 `token.content` 获取围栏内文本：
 
 ```tsx
-import type { StatefulToken } from '@markdown-stream/core'
+import type { StatefulToken } from '@markdown-stream/react'
 
 interface Props { token: StatefulToken }
 
@@ -146,7 +146,7 @@ export default function WarningBlock({ token }: Props) {
 
 ```tsx
 import { useMemo } from 'react'
-import type { StatefulToken } from '@markdown-stream/core'
+import type { StatefulToken } from '@markdown-stream/react'
 
 interface Props { token: StatefulToken }
 
@@ -209,7 +209,7 @@ export default function JsonBlock({ token }: Props) {
 自定义组件通过 `token.children[0].content` 取得被包裹的文本：
 
 ```tsx
-import type { StatefulToken } from '@markdown-stream/core'
+import type { StatefulToken } from '@markdown-stream/react'
 
 export default function MyHighlight({ token }: { token: StatefulToken }) {
   return (
@@ -254,7 +254,7 @@ Markdown 原文：
 `PinkHighlight` 直接读取 `token.content`（已提取捕获组内容）：
 
 ```tsx
-import type { StatefulToken } from '@markdown-stream/core'
+import type { StatefulToken } from '@markdown-stream/react'
 
 export default function PinkHighlight({ token }: { token: StatefulToken }) {
   return (
@@ -298,7 +298,7 @@ export default function PinkHighlight({ token }: { token: StatefulToken }) {
 
 ```tsx
 import { useState, useEffect } from 'react'
-import type { StatefulToken } from '@markdown-stream/core'
+import type { StatefulToken } from '@markdown-stream/react'
 
 export default function TimedBlock({ token }: { token: StatefulToken }) {
   const [now, setNow] = useState(Date.now())
@@ -389,7 +389,7 @@ interface VueSfcCardMetrics {
 
 ```tsx
 import { VueSfcFenceRenderer } from '@markdown-stream/react'
-import type { StatefulToken } from '@markdown-stream/core'
+import type { StatefulToken } from '@markdown-stream/react'
 
 function MyVueBlock({ token }: { token: StatefulToken }) {
   const start = token.meta?.streamStartTime as number | undefined

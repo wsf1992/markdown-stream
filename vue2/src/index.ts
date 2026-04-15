@@ -11,3 +11,5 @@ export { buildTokenType, extractTokenTypes, extractComponentMap, makeStateRouter
 
 export type { CustomTokenDefinition, MarkdownTokenComponentMap, TokenComponentProps } from './types/renderer.js'
 export type { MarkdownStreamProps } from './types/props.js'
+
+export type { StatefulToken } from '@markdown-stream/core'
