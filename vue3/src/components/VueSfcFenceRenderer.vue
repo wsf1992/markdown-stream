@@ -288,6 +288,7 @@ onUnmounted(() => {
 <template>
   <div class="ms-sfc-card">
     <div class="ms-sfc-card-header">
+      <span class="ms-sfc-card-title">{{ title }}</span>
       <div class="ms-sfc-card-toolbar">
         <div v-if="toolbarItems.length" class="ms-sfc-card-metrics" aria-label="render metrics">
           <span v-for="item in toolbarItems" :key="item" class="ms-sfc-card-metric">{{ item }}</span>

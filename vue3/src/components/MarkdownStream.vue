@@ -14,10 +14,12 @@ export default defineComponent({
       type: [Object, String] as PropType<string | AsyncIterable<string>>,
       default: undefined,
     },
+    /** @deprecated 请使用 content prop */
     source: {
       type: String as PropType<string>,
       default: undefined,
     },
+    /** @deprecated 请使用 content prop */
     stream: {
       type: [Object, String] as PropType<AsyncIterable<string> | string>,
       default: undefined,
@@ -26,6 +28,11 @@ export default defineComponent({
       type: Array as PropType<TokenTypeDefinition[]>,
       default: undefined,
     },
+    /**
+     * 自定义 token 渲染组件。
+     * 推荐格式：CustomTokenDefinition[]（数组格式，支持 state 专属组件和自动注册 tokenType）。
+     * @deprecated Record<string, Component> 格式已废弃，请迁移至数组格式。
+     */
     components: {
       type: [Array, Object] as PropType<
         CustomTokenDefinition[] | Partial<MarkdownTokenComponentMap>
