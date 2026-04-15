@@ -27,8 +27,8 @@
 # 核心库（框架无关）
 npm install @markdown-stream/core
 
-# Vue 3 组件
-npm install @markdown-stream/vue3 @markdown-stream/core vue
+# Vue 3 组件（@markdown-stream/core 和 vue 会自动作为 peer dep 安装）
+npm install @markdown-stream/vue3
 ```
 
 ### Vue 3 流式渲染

@@ -30,9 +30,7 @@
     "test:watch": "vitest"
   },
   "peerDependencies": {
-    "vue": "^2.7.0"
-  },
-  "dependencies": {
+    "vue": "^2.7.0",
     "@markdown-stream/core": "^0.1.0"
   },
   "devDependencies": {
