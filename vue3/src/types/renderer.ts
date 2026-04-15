@@ -15,8 +15,25 @@ export interface TokenComponentProps {
 export interface CustomTokenDefinition {
   /** token 类型名，同时作为组件映射 key */
   name: string
-  /** 渲染组件，token.state（streaming / done）在组件内部自行处理，建议 markRaw() 包裹 */
+  /**
+   * 兜底渲染组件，当没有匹配的 state 专属组件时使用。
+   * token.state 在组件内部自行处理，建议 markRaw() 包裹。
+   */
   component?: Component
+  /**
+   * state=done 时使用的专属渲染组件，优先于 component。
+   */
+  done?: Component
+  /**
+   * state=streaming 时使用的专属渲染组件，优先于 component。
+   * 若未定义则该 state 下不渲染（返回 null）。
+   */
+  streaming?: Component
+  /**
+   * state=start 时使用的专属渲染组件，优先于 component。
+   * 若未定义则该 state 下不渲染（返回 null）。
+   */
+  start?: Component
   /** 额外传递给渲染组件的 props（与 token 合并，不会覆盖 token） */
   props?: Record<string, unknown>
   /** 监听渲染组件 emit 的事件处理器，key 格式同 Vue h() 的 onXxx */

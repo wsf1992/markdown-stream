@@ -19,11 +19,15 @@ function toHandlerKey(eventName: string): string {
 /**
  * 将 CustomTokenDefinition 包装为单个渲染组件。
  *
- * component 统一处理所有 state（streaming / done），用户在组件内部自行判断 token.state。
- * 用户无需手动调用 markRaw()，直接传入组件对象即可。
+ * - state 专属组件（done / streaming / start）优先于兜底 component。
+ * - 若当前 state 没有匹配的专属组件且也无兜底 component，返回 null（不渲染）。
+ * - 用户无需手动调用 markRaw()，直接传入组件对象即可。
  */
 export function makeStateRouter(def: CustomTokenDefinition): ReturnType<typeof defineComponent> {
-  const comp = safeComp(def.component)
+  const comp        = safeComp(def.component)
+  const doneComp      = safeComp(def.done)
+  const streamingComp = safeComp(def.streaming)
+  const startComp     = safeComp(def.start)
   const extraProps = def.props ?? {}
   // 将 on: { copy: fn } 转换为 Vue h() 期望的 onCopy 格式
   const onHandlers = def.on
@@ -43,8 +47,14 @@ export function makeStateRouter(def: CustomTokenDefinition): ReturnType<typeof d
       },
       setup(props) {
         return (): VNode | null => {
-          if (!comp) return null
-          return h(comp, { token: props.token, ...extraProps, ...onHandlers })
+          const state = props.token.state
+          const resolved =
+            (state === 'done'      && doneComp)      ||
+            (state === 'streaming' && streamingComp) ||
+            (state === 'start'     && startComp)     ||
+            comp
+          if (!resolved) return null
+          return h(resolved, { token: props.token, ...extraProps, ...onHandlers })
         }
       },
     })
