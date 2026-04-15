@@ -8,12 +8,6 @@
 npm install @markdown-stream/react
 ```
 
-引入样式（推荐）：
-
-```ts
-import '@markdown-stream/react/style.css'
-```
-
 ---
 
 ## Props 参考

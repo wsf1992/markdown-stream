@@ -36,7 +36,6 @@ npm install @markdown-stream/vue3
 ```vue
 <script setup lang="ts">
 import { MarkdownStream } from '@markdown-stream/vue3'
-import '@markdown-stream/vue3/style.css'
 
 async function* aiStream() {
   yield '# Title\n\n'
