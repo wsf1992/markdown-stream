@@ -1,4 +1,3 @@
-import type { TokenTypeDefinition } from '@markdown-stream/core'
 import type { CustomTokenDefinition, MarkdownTokenComponentMap } from './renderer.js'
 
 export interface MarkdownStreamProps {
@@ -6,7 +5,6 @@ export interface MarkdownStreamProps {
   content?: string | AsyncIterable<string>
   source?: string
   stream?: AsyncIterable<string> | string
-  tokenTypes?: TokenTypeDefinition[]
   /**
    * 自定义 token 定义数组（推荐）或渲染组件映射（兼容旧格式）。
    *

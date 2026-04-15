@@ -1,7 +1,6 @@
 <script lang="ts">
 import { defineComponent, h, provide, watch, markRaw, toRaw, computed } from 'vue'
 import type { PropType } from 'vue'
-import type { TokenTypeDefinition } from '@markdown-stream/core'
 import { useMarkdownStream } from '../composables/use-markdown-stream.js'
 import MarkdownTokenNode, { COMPONENTS_INJECT_KEY } from './MarkdownTokenNode.vue'
 import type { CustomTokenDefinition, MarkdownTokenComponentMap } from '../types/renderer.js'
@@ -22,10 +21,6 @@ export default defineComponent({
     /** @deprecated 请使用 content prop */
     stream: {
       type: [Object, String] as PropType<AsyncIterable<string> | string>,
-      default: undefined,
-    },
-    tokenTypes: {
-      type: Array as PropType<TokenTypeDefinition[]>,
       default: undefined,
     },
     /**
@@ -55,7 +50,7 @@ export default defineComponent({
       : []
 
     const { tokens, isStreaming, consume, parse, reset, cancel } = useMarkdownStream({
-      tokenTypes: [...(props.tokenTypes ?? []), ...autoTokenTypes],
+      tokenTypes: autoTokenTypes,
       debug: props.debug,
     })
 

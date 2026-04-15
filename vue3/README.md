@@ -8,12 +8,6 @@
 npm install @markdown-stream/vue3
 ```
 
-引入样式（推荐）：
-
-```ts
-import '@markdown-stream/vue3/style.css'
-```
-
 ---
 
 ## Props 参考
@@ -22,7 +16,6 @@ import '@markdown-stream/vue3/style.css'
 |------|------|------|
 | `content` | `string \| AsyncIterable<string>` | 统一入口：字符串一次性渲染，`AsyncIterable` 流式渲染（推荐） |
 | `components` | `CustomTokenDefinition[] \| Partial<MarkdownTokenComponentMap>` | 自定义 token 定义或渲染组件映射 |
-| `tokenTypes` | `TokenTypeDefinition[]` | 传给核心库的自定义 token 类型 |
 | `cursor` | `boolean` | 流式输出时显示打字光标，默认 `false` |
 | `debug` | `boolean` | 在 console 打印 token 状态变化，默认 `false` |
 
@@ -387,41 +380,3 @@ const elapsed = computed(() => {
 
 > 这两个字段不参与内容相等性比较，不会因时间戳变化触发多余的重渲染。
 
----
-
-## `useMarkdownStream` 组合式 API
-
-底层组合式函数，适合需要自行控制渲染逻辑的场景。
-
-```ts
-import { useMarkdownStream } from '@markdown-stream/vue3'
-
-const {
-  tokens,       // Ref<StatefulToken[]> — 当前完整 token 树
-  isStreaming,  // Ref<boolean>
-  error,        // Ref<unknown>
-  parse,        // (markdown: string) => void — 一次性解析
-  write,        // (chunk: string) => void — 追加输入
-  consume,      // (stream: AsyncIterable<string>) => Promise<void>
-  reset,        // () => void
-  cancel,       // () => void — 取消当前流
-} = useMarkdownStream({ debug: false })
-```
-
-```vue
-<script setup lang="ts">
-import { useMarkdownStream } from '@markdown-stream/vue3'
-import type { StatefulToken } from '@markdown-stream/vue3'
-
-const { tokens, isStreaming, consume } = useMarkdownStream()
-
-async function* aiStream() { /* ... */ }
-consume(aiStream())
-</script>
-
-<template>
-  <div v-for="token in tokens" :key="token.id" :data-state="token.state">
-    <!-- 自定义渲染 -->
-  </div>
-</template>
-```
